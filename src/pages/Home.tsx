@@ -209,6 +209,7 @@ export function Home() {
         onSearchChange={setSearchQuery}
         selectedTags={selectedTags}
         onTagsChange={setSelectedTags}
+        onPromptCreated={handlePromptCreated}
       />
       
       <main className="container mx-auto px-4 py-4 sm:py-6 lg:py-8 max-w-2xl">
@@ -229,6 +230,7 @@ export function Home() {
               }}
               tags={prompt.tags}
               upvotes={prompt.upvotes}
+              bookmarks={prompt.bookmarks}
               isUpvoted={currentUserUpvotes.has(prompt.id)}
               isSaved={currentUserBookmarks.has(prompt.id)}
               createdAt={prompt.created_at}

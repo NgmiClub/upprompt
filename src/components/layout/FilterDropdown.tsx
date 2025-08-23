@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Filter, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,8 +8,9 @@ import {
 } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { supabase } from '@/integrations/supabase/client';
 
-const tags = [
+const defaultTags = [
   'Midjourney',
   'GPT-4',
   'Code Generation',
@@ -36,6 +37,37 @@ interface FilterDropdownProps {
 export function FilterDropdown({ selectedTags, onTagsChange }: FilterDropdownProps) {
   const [sortBy, setSortBy] = useState('trending');
   const [isOpen, setIsOpen] = useState(false);
+  const [availableTags, setAvailableTags] = useState<string[]>(defaultTags);
+
+  useEffect(() => {
+    loadAvailableTags();
+  }, []);
+
+  const loadAvailableTags = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('prompts')
+        .select('tags')
+        .not('tags', 'is', null);
+
+      if (error) throw error;
+
+      // Extract all unique tags from the database
+      const allTags = new Set<string>();
+      data.forEach(prompt => {
+        if (prompt.tags) {
+          prompt.tags.forEach(tag => allTags.add(tag));
+        }
+      });
+
+      // Combine default tags with database tags, removing duplicates
+      const combinedTags = [...new Set([...defaultTags, ...Array.from(allTags)])];
+      setAvailableTags(combinedTags.sort());
+    } catch (error) {
+      console.error('Error loading tags:', error);
+      setAvailableTags(defaultTags);
+    }
+  };
 
   const toggleTag = (tag: string) => {
     const newTags = selectedTags.includes(tag) 
@@ -108,7 +140,7 @@ export function FilterDropdown({ selectedTags, onTagsChange }: FilterDropdownPro
           <div>
             <h5 className="font-subheading text-xs text-muted-foreground mb-2">Tags</h5>
             <div className="flex flex-wrap gap-1.5 sm:gap-2">
-              {tags.map((tag) => (
+              {availableTags.map((tag) => (
                 <Badge
                   key={tag}
                   variant={selectedTags.includes(tag) ? "default" : "outline"}

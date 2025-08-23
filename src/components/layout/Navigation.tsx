@@ -16,6 +16,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { FilterDropdown } from './FilterDropdown';
+import { CreatePromptModal } from '@/components/prompts/CreatePromptModal';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -25,10 +26,12 @@ interface NavigationProps {
   onSearchChange: (query: string) => void;
   selectedTags: string[];
   onTagsChange: (tags: string[]) => void;
+  onPromptCreated?: () => void;
 }
 
-export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsChange }: NavigationProps) {
+export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsChange, onPromptCreated }: NavigationProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
@@ -36,6 +39,11 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
   const handleSignOut = async () => {
     await signOut();
     navigate('/auth');
+  };
+
+  const handlePromptCreated = () => {
+    setIsCreateModalOpen(false);
+    onPromptCreated?.();
   };
 
   return (
@@ -84,6 +92,7 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
 
           {/* Create Post Button */}
           <Button 
+            onClick={() => setIsCreateModalOpen(true)}
             className="font-subheading transition-smooth hover:scale-105"
             size="sm"
           >
@@ -189,6 +198,7 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
                     variant="outline"
                     className="w-full justify-start font-subheading transition-smooth"
                     onClick={() => {
+                      setIsCreateModalOpen(true);
                       setIsMobileMenuOpen(false);
                     }}
                   >
@@ -255,6 +265,13 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
           </div>
         </div>
       </div>
+
+      {/* Create Prompt Modal */}
+      <CreatePromptModal 
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onPromptCreated={handlePromptCreated}
+      />
     </header>
   );
 }

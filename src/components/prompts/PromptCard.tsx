@@ -17,6 +17,7 @@ interface PromptCardProps {
   };
   tags: string[];
   upvotes: number;
+  bookmarks: number;
   isUpvoted: boolean;
   isSaved: boolean;
   createdAt: string;
@@ -31,6 +32,7 @@ export function PromptCard({
   author,
   tags,
   upvotes,
+  bookmarks,
   isUpvoted,
   isSaved,
   createdAt,
@@ -170,7 +172,9 @@ export function PromptCard({
                 isSaved ? 'text-primary hover:text-primary' : 'text-muted-foreground'
               }`}
             >
-              <Bookmark className={`h-3 w-3 sm:h-4 sm:w-4 ${isSaved ? 'fill-current' : ''}`} />
+              <Bookmark className={`h-3 w-3 sm:h-4 sm:w-4 mr-1 ${isSaved ? 'fill-current' : ''}`} />
+              <span className="font-body text-xs hidden sm:inline">{bookmarks}</span>
+              <span className="font-body text-xs sm:hidden">{bookmarks > 999 ? `${Math.floor(bookmarks/1000)}k` : bookmarks}</span>
             </Button>
           </div>
 

@@ -76,7 +76,7 @@ export function Profile() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const isOwnProfile = !username || (profile && user && profile.user_id === user.id);
+  const isOwnProfile = profile && user && profile.user_id === user.id;
 
   useEffect(() => {
     if (!loading && !user) {
@@ -105,10 +105,17 @@ export function Profile() {
       const { data: profileData, error: profileError } = await query.single();
       
       if (profileError) {
-        if (profileError.code === 'PGRST116' && !username) {
-          // No profile exists for current user, create one
-          await createDefaultProfile();
-          return;
+        if (profileError.code === 'PGRST116') {
+          if (!username) {
+            // No profile exists for current user, create one
+            await createDefaultProfile();
+            return;
+          } else {
+            // Profile not found for the requested username
+            setProfile(null);
+            setIsLoading(false);
+            return;
+          }
         }
         throw profileError;
       }
@@ -135,7 +142,7 @@ export function Profile() {
       setUserPrompts(promptsData || []);
 
       // Load bookmarked prompts if viewing own profile
-      if (isOwnProfile) {
+      if (profileData.user_id === user?.id) {
         const { data: bookmarksData, error: bookmarksError } = await supabase
           .from('bookmarks')
           .select(`
@@ -359,6 +366,7 @@ export function Profile() {
           onSearchChange={() => {}}
           selectedTags={[]}
           onTagsChange={() => {}}
+          onPromptCreated={() => loadProfile()}
         />
         <div className="container mx-auto px-4 py-8 max-w-2xl">
           <div className="text-center py-12">
@@ -376,6 +384,7 @@ export function Profile() {
         onSearchChange={() => {}}
         selectedTags={[]}
         onTagsChange={() => {}}
+        onPromptCreated={() => loadProfile()}
       />
       
       <main className="container mx-auto px-4 py-4 sm:py-6 lg:py-8 max-w-4xl">
@@ -536,6 +545,7 @@ export function Profile() {
                   }}
                   tags={prompt.tags}
                   upvotes={prompt.upvotes}
+                  bookmarks={prompt.bookmarks}
                   isUpvoted={currentUserUpvotes.has(prompt.id)}
                   isSaved={currentUserBookmarks.has(prompt.id)}
                   createdAt={prompt.created_at}
@@ -567,6 +577,7 @@ export function Profile() {
                     }}
                     tags={prompt.tags}
                     upvotes={prompt.upvotes}
+                    bookmarks={prompt.bookmarks}
                     isUpvoted={currentUserUpvotes.has(prompt.id)}
                     isSaved={currentUserBookmarks.has(prompt.id)}
                     createdAt={prompt.created_at}
