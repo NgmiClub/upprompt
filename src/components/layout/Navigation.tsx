@@ -54,7 +54,7 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <span className="text-primary-foreground font-heading text-lg">W</span>
           </div>
-          <span className="font-heading text-xl text-foreground hidden sm:block">weprompt</span>
+          <span className="font-heading text-xl text-foreground hidden sm:block">upprompt</span>
         </div>
 
         {/* Desktop Search Bar with Filter */}
