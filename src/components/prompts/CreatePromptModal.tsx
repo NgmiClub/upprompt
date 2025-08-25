@@ -92,7 +92,6 @@ export function CreatePromptModal({ isOpen, onClose, onPromptCreated }: CreatePr
         description: 'Prompt created successfully!',
       });
       
-      // Reset form
       setTitle('');
       setContent('');
       setSelectedTags([]);
@@ -120,15 +119,14 @@ export function CreatePromptModal({ isOpen, onClose, onPromptCreated }: CreatePr
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto bg-card border-border mx-4 sm:mx-0">
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto bg-card border-border mx-auto my-4 p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="font-heading text-xl text-foreground">
+          <DialogTitle className="font-heading text-lg sm:text-xl text-foreground">
             Create New Prompt
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 sm:space-y-6">
-          {/* Title */}
           <div className="space-y-2">
             <label className="font-subheading text-sm text-foreground">
               Title
@@ -141,7 +139,6 @@ export function CreatePromptModal({ isOpen, onClose, onPromptCreated }: CreatePr
             />
           </div>
 
-          {/* Content */}
           <div className="space-y-2">
             <label className="font-subheading text-sm text-foreground">
               Prompt Content
@@ -150,20 +147,18 @@ export function CreatePromptModal({ isOpen, onClose, onPromptCreated }: CreatePr
               placeholder="Write your prompt here..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="min-h-[150px] sm:min-h-[200px] bg-input border-border focus:ring-ring transition-smooth resize-none w-full"
+              className="min-h-[120px] sm:min-h-[200px] bg-input border-border focus:ring-ring transition-smooth resize-none w-full"
             />
             <p className="font-caption text-xs text-muted-foreground">
               {content.length} characters
             </p>
           </div>
 
-          {/* Tags */}
           <div className="space-y-3">
             <label className="font-subheading text-sm text-foreground">
               Tags
             </label>
             
-            {/* Selected Tags */}
             {selectedTags.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {selectedTags.map((tag) => (
@@ -180,8 +175,7 @@ export function CreatePromptModal({ isOpen, onClose, onPromptCreated }: CreatePr
               </div>
             )}
 
-            {/* Custom Tag Input */}
-            <div className="flex space-x-2">
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
               <Input
                 placeholder="Add custom tag..."
                 value={customTag}
@@ -198,13 +192,12 @@ export function CreatePromptModal({ isOpen, onClose, onPromptCreated }: CreatePr
                 variant="outline"
                 onClick={handleCustomTagAdd}
                 disabled={!customTag.trim()}
-                className="border-border hover:bg-accent transition-fast px-3"
+                className="border-border hover:bg-accent transition-fast px-3 w-full sm:w-auto"
               >
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
 
-            {/* Suggested Tags */}
             <div className="space-y-2">
               <p className="font-caption text-xs text-muted-foreground">Suggested tags:</p>
               <div className="flex flex-wrap gap-1.5 sm:gap-2">
@@ -224,7 +217,6 @@ export function CreatePromptModal({ isOpen, onClose, onPromptCreated }: CreatePr
             </div>
           </div>
 
-          {/* Actions */}
           <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4 border-t border-border">
             <Button
               variant="outline"
