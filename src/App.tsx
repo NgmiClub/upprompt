@@ -7,9 +7,6 @@ import { Profile } from "./pages/Profile";
 import { Settings } from "./pages/Settings";
 import { Dashboard } from "./pages/Dashboard";
 import { PromptAnalytics } from "./components/analytics/PromptAnalytics";
-import { PromptCollection } from "./components/collections/PromptCollection";
-import { PromptTester } from "./components/testing/PromptTester";
-import { PromptChallenges } from "./components/community/PromptChallenges";
 
 function App() {
   return (
@@ -22,9 +19,6 @@ function App() {
         <Route path="/profile/:username?" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/analytics" element={<PromptAnalytics />} />
-        <Route path="/collections" element={<PromptCollection />} />
-        <Route path="/tester" element={<PromptTester />} />
-        <Route path="/challenges" element={<PromptChallenges />} />
       </Routes>
       <Toaster />
     </BrowserRouter>

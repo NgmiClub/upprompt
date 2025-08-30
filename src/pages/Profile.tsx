@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Navigation } from '@/components/layout/Navigation';
+import { Navigation } from '@/components/shared/Navigation';
 import { PromptCard } from '@/components/prompts/PromptCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -361,13 +361,7 @@ export function Profile() {
   if (!profile) {
     return (
       <div className="min-h-screen bg-background">
-        <Navigation 
-          searchQuery=""
-          onSearchChange={() => {}}
-          selectedTags={[]}
-          onTagsChange={() => {}}
-          onPromptCreated={() => loadProfile()}
-        />
+        <Navigation />
         <div className="container mx-auto px-4 py-8 max-w-2xl">
           <div className="text-center py-12">
             <p className="text-muted-foreground">Profile not found</p>
@@ -379,13 +373,7 @@ export function Profile() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation 
-        searchQuery=""
-        onSearchChange={() => {}}
-        selectedTags={[]}
-        onTagsChange={() => {}}
-        onPromptCreated={() => loadProfile()}
-      />
+      <Navigation />
       
       <main className="container mx-auto px-4 py-4 sm:py-6 lg:py-8 max-w-4xl">
         {/* Profile Header */}

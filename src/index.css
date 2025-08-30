@@ -2,64 +2,67 @@
 @tailwind components;
 @tailwind utilities;
 
-/* weprompt Design System - Outfit font family with dual-theme support */
-
 @layer base {
   :root {
-    /* Light Mode */
-    --background: 0 0% 98.8%;
-    --foreground: 0 0% 9%;
-    --card: 0 0% 98.8%;
-    --card-foreground: 0 0% 9%;
-    --popover: 0 0% 98.8%;
-    --popover-foreground: 0 0% 32.2%;
-    --primary: 40 100% 50%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+    --primary: 25 95% 53%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 99.2%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 92.9%;
-    --muted-foreground: 0 0% 12.5%;
-    --accent: 0 0% 92.9%;
-    --accent-foreground: 0 0% 12.5%;
-    --destructive: 10 84% 44%;
-    --destructive-foreground: 0 0% 99.6%;
-    --border: 0 0% 87.5%;
-    --input: 0 0% 96.5%;
-    --ring: 142 69% 58%;
-    --radius: 0.5rem;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 10%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 10%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 25 95% 53%;
+    --radius: 0.75rem;
     
-    /* Typography weights */
-    --heading-weight: 600;
-    --subheading-weight: 500;
-    --body-weight: 400;
-    --caption-weight: 300;
+    --gradient-primary: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+    --gradient-subtle: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
     
-    /* Transitions */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-fast: all 0.15s ease;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    
+    --shadow-white-sm: 0 1px 2px 0 rgb(255 255 255 / 0.05);
+    --shadow-white: 0 1px 3px 0 rgb(255 255 255 / 0.1), 0 1px 2px -1px rgb(255 255 255 / 0.1);
+    --shadow-white-md: 0 4px 6px -1px rgb(255 255 255 / 0.1), 0 2px 4px -2px rgb(255 255 255 / 0.1);
+    --shadow-white-lg: 0 10px 15px -3px rgb(255 255 255 / 0.1), 0 4px 6px -4px rgb(255 255 255 / 0.1);
+    
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    --font-display: 'Montserrat', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', 'Monaco', 'Consolas', monospace;
   }
 
   .dark {
-    /* Dark Mode */
-    --background: 0 0% 7.1%;
-    --foreground: 210 40% 92.2%;
-    --card: 0 0% 9%;
-    --card-foreground: 210 40% 92.2%;
-    --popover: 0 0% 14.1%;
-    --popover-foreground: 0 0% 66.3%;
-    --primary: 40 78% 34%;
-    --primary-foreground: 40 100% 5%;
-    --secondary: 0 0% 14.1%;
+    --background: 0 0% 10%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 15%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 15%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 25 95% 53%;
+    --primary-foreground: 0 0% 10%;
+    --secondary: 0 0% 20%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 12.2%;
-    --muted-foreground: 0 0% 63.5%;
-    --accent: 0 0% 19.2%;
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 0 0% 20%;
     --accent-foreground: 0 0% 98%;
-    --destructive: 10 66% 33%;
-    --destructive-foreground: 10 25% 92.9%;
-    --border: 0 0% 16.1%;
-    --input: 0 0% 14.1%;
-    --ring: 142 76% 64%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 25%;
+    --input: 0 0% 25%;
+    --ring: 25 95% 53%;
   }
 }
 
@@ -69,6 +72,107 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
+
+  .font-heading {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+  .font-display {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+  }
+}
+
+@layer components {
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary to-orange-500 bg-clip-text text-transparent;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-200 hover:scale-[1.01];
+  }
+
+  .card-hover:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  .dark .card-hover:hover {
+    box-shadow: var(--shadow-white-md);
+  }
+
+  .button-hover {
+    @apply transition-all duration-200 hover:shadow-sm active:scale-95;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-orange-500 bg-clip-text text-transparent;
+  }
+
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .bg-gradient-subtle {
+    background: var(--gradient-subtle);
+  }
+}
+
+@keyframes slideIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { 
+    opacity: 0; 
+    transform: scale(0.98); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.4s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out;
 }
