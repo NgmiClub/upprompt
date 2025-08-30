@@ -8,7 +8,6 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
@@ -17,7 +16,6 @@ export function useAuth() {
       }
     );
 
-    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -26,6 +24,25 @@ export function useAuth() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const refreshUser = async () => {
+    try {
+      const { data: { session: currentSession }, error } = await supabase.auth.getSession();
+      if (error) throw error;
+      
+      if (currentSession) {
+        setSession(currentSession);
+        setUser(currentSession.user);
+      }
+      
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (currentUser) {
+        setUser(currentUser);
+      }
+    } catch (error) {
+      console.error('Error refreshing user:', error);
+    }
+  };
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
@@ -64,5 +81,6 @@ export function useAuth() {
     signIn,
     signUp,
     signOut,
+    refreshUser,
   };
 }

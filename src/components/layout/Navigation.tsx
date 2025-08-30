@@ -1,5 +1,18 @@
 import { useState } from 'react';
-import { Search, Plus, User, Settings, LogOut, Moon, Sun, Menu, X } from 'lucide-react';
+import { 
+  Search, 
+  Sun, 
+  Moon, 
+  Plus, 
+  Settings, 
+  LogOut, 
+  User, 
+  BarChart3, 
+  BookOpen, 
+  Zap, 
+  Trophy,
+  Menu
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -120,7 +133,51 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
                 <User className="mr-2 h-4 w-4" />
                 <span className="font-body">Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-accent transition-fast">
+              
+              <DropdownMenuItem
+                onClick={() => navigate('/dashboard')}
+                className="hover:bg-accent transition-fast cursor-pointer"
+              >
+                <BarChart3 className="mr-2 h-4 w-4" />
+                <span className="font-body">Dashboard</span>
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem
+                onClick={() => navigate('/analytics')}
+                className="hover:bg-accent transition-fast cursor-pointer"
+              >
+                <BarChart3 className="mr-2 h-4 w-4" />
+                <span className="font-body">Analytics</span>
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem
+                onClick={() => navigate('/collections')}
+                className="hover:bg-accent transition-fast cursor-pointer"
+              >
+                <BookOpen className="mr-2 h-4 w-4" />
+                <span className="font-body">Collections</span>
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem
+                onClick={() => navigate('/tester')}
+                className="hover:bg-accent transition-fast cursor-pointer"
+              >
+                <Zap className="mr-2 h-4 w-4" />
+                <span className="font-body">Prompt Tester</span>
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem
+                onClick={() => navigate('/challenges')}
+                className="hover:bg-accent transition-fast cursor-pointer"
+              >
+                <Trophy className="mr-2 h-4 w-4" />
+                <span className="font-body">Challenges</span>
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem
+                onClick={() => navigate('/settings')}
+                className="hover:bg-accent transition-fast cursor-pointer"
+              >
                 <Settings className="mr-2 h-4 w-4" />
                 <span className="font-body">Settings</span>
               </DropdownMenuItem>
@@ -215,17 +272,80 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
                     }}
                   >
                     <User className="h-4 w-4 mr-2" />
-                    Profile
+                    <span>Profile</span>
                   </Button>
-                  
-                  <Button 
-                    variant="ghost"
-                    className="w-full justify-start"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <Settings className="h-4 w-4 mr-2" />
-                    Settings
-                  </Button>
+                      
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start"
+                        onClick={() => {
+                          navigate('/dashboard');
+                          setIsMobileMenuOpen(false);
+                        }}
+                      >
+                        <BarChart3 className="h-4 w-4 mr-2" />
+                        <span>Dashboard</span>
+                      </Button>
+                      
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start"
+                        onClick={() => {
+                          navigate('/analytics');
+                          setIsMobileMenuOpen(false);
+                        }}
+                      >
+                        <BarChart3 className="h-4 w-4 mr-2" />
+                        <span>Analytics</span>
+                      </Button>
+                      
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start"
+                        onClick={() => {
+                          navigate('/collections');
+                          setIsMobileMenuOpen(false);
+                        }}
+                      >
+                        <BookOpen className="h-4 w-4 mr-2" />
+                        <span>Collections</span>
+                      </Button>
+                      
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start"
+                        onClick={() => {
+                          navigate('/tester');
+                          setIsMobileMenuOpen(false);
+                        }}
+                      >
+                        <Zap className="h-4 w-4 mr-2" />
+                        <span>Prompt Tester</span>
+                      </Button>
+                      
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start"
+                        onClick={() => {
+                          navigate('/challenges');
+                          setIsMobileMenuOpen(false);
+                        }}
+                      >
+                        <Trophy className="h-4 w-4 mr-2" />
+                        <span>Challenges</span>
+                      </Button>
+                      
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start"
+                        onClick={() => {
+                          navigate('/settings');
+                          setIsMobileMenuOpen(false);
+                        }}
+                      >
+                        <Settings className="h-4 w-4 mr-2" />
+                        <span>Settings</span>
+                      </Button>
                   
                   <Button 
                     variant="ghost"

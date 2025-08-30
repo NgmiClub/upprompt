@@ -1,73 +1,149 @@
-# Welcome to your NGMI project
+# UPPrompt - AI Prompt Engineering Platform
 
-## Project info
+A modern, professional AI prompt engineering platform built with React, TypeScript, and Supabase. Create, test, and share AI prompts with real-time analytics and community features.
 
-**URL**: https://lovable.dev/projects/ddeeb299-09da-4010-9897-98b3bd50b43c
+## ✨ Features
 
-## How can I edit this code?
+### 🎯 Core Functionality
+- **AI Prompt Creation & Management** - Build and organize your AI prompts
+- **Real-time Analytics Dashboard** - Track performance with live metrics
+- **Prompt Collections** - Curate and share themed prompt collections
+- **AI Prompt Tester** - Test prompts across multiple AI models
+- **Community Challenges** - Compete in themed prompt competitions
 
-There are several ways of editing your application.
+### 🎨 Modern UI/UX
+- **Professional Design** - Market-level UI competing with top websites
+- **Yellow-Orange Theme** - Modern, warm color scheme with gradients
+- **Responsive Design** - Optimized for all devices and screen sizes
+- **Smooth Animations** - Beautiful transitions and hover effects
+- **Dark/Light Mode** - Enhanced theme support with proper contrast
 
-**Use Lovable**
+### 🚀 Advanced Features
+- **Live Metrics** - Real-time data updates every 5 seconds
+- **Performance Tracking** - Weekly growth, user rankings, and trends
+- **Community Features** - User interactions, upvotes, and bookmarks
+- **Real-time Updates** - Live data without page refreshes
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ddeeb299-09da-4010-9897-98b3bd50b43c) and start prompting.
+## 🛠️ Tech Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Frontend**: React 18 + TypeScript
+- **UI Components**: Shadcn UI + Tailwind CSS
+- **Styling**: Custom CSS with CSS Variables
+- **Charts**: Recharts for data visualization
+- **Backend**: Supabase (PostgreSQL + Real-time)
+- **Authentication**: Supabase Auth
+- **Icons**: Lucide React
+- **Fonts**: Inter + Montserrat + JetBrains Mono
 
-**Use your preferred IDE**
+## 🎨 Design System
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Color Palette
+- **Primary**: Warm yellow-orange (#f59e0b)
+- **Secondary**: Complementary orange tones
+- **Accents**: Green, blue, and purple for different features
+- **Gradients**: Beautiful gradient combinations throughout
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Typography
+- **Display**: Montserrat for headings
+- **Body**: Inter for readable text
+- **Code**: JetBrains Mono for technical content
 
-Follow these steps:
+### Animations
+- **Slide-up**: Smooth entrance animations
+- **Fade-in**: Elegant content reveals
+- **Scale-in**: Interactive element animations
+- **Hover effects**: Rich interactive feedback
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 📱 Responsive Design
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- **Mobile First**: Optimized for mobile devices
+- **Tablet**: Adaptive layouts for medium screens
+- **Desktop**: Full-featured desktop experience
+- **Touch Friendly**: Optimized for touch interactions
 
-# Step 3: Install the necessary dependencies.
-npm i
+## 🚀 Getting Started
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd upprompt
+   ```
 
-**Edit a file directly in GitHub**
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   # Add your Supabase credentials
+   ```
 
-**Use GitHub Codespaces**
+4. **Run the development server**
+   ```bash
+   npm run dev
+   ```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+5. **Open your browser**
+   Navigate to `http://localhost:5173`
 
-## What technologies are used for this project?
+## 🔧 Configuration
 
-This project is built with:
+### Supabase Setup
+1. Create a new Supabase project
+2. Set up your database tables
+3. Configure authentication
+4. Add your credentials to `.env.local`
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Customization
+- Modify colors in `src/index.css`
+- Update Tailwind config in `tailwind.config.ts`
+- Customize components in `src/components/`
 
-## How can I deploy this project?
+## 📊 Features in Detail
 
-Simply open [Lovable](https://lovable.dev/projects/ddeeb299-09da-4010-9897-98b3bd50b43c) and click on Share -> Publish.
+### Dashboard
+- **Live Metrics**: Real-time user activity, prompts, and interactions
+- **Performance Cards**: Beautiful gradient cards with growth indicators
+- **Quick Actions**: Easy access to common tasks
+- **Community Insights**: Trending content and challenges
 
-## Can I connect a custom domain to my Lovable project?
+### Analytics
+- **Performance Tracking**: Weekly and monthly growth metrics
+- **User Rankings**: Community leaderboards
+- **Engagement Metrics**: Upvotes, bookmarks, and views
+- **Trend Analysis**: Visual charts and data insights
 
-Yes, you can!
+### Prompt Management
+- **Create & Edit**: Rich prompt creation interface
+- **Collections**: Organize prompts by theme or purpose
+- **Sharing**: Share prompts with the community
+- **Version Control**: Track prompt iterations
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🎯 Roadmap
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- [ ] **AI Integration**: Direct API connections to AI models
+- [ ] **Advanced Analytics**: Machine learning insights
+- [ ] **Collaboration**: Team prompt development
+- [ ] **Marketplace**: Prompt monetization
+- [ ] **API Access**: Developer tools and integrations
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our contributing guidelines for details.
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🙏 Acknowledgments
+
+- Built with modern web technologies
+- Inspired by leading AI platforms
+- Community-driven development
+- Professional-grade design standards
+
+---
+
+**UPPrompt** - Where AI meets creativity, powered by modern web technology.
