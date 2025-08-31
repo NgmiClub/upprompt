@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            width: 1200px;
+            height: 630px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .container {
+            text-align: center;
+            padding: 60px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 24px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo {
+            font-size: 72px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .tagline {
+            font-size: 28px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .subtitle {
+            font-size: 20px;
+            opacity: 0.8;
+        }
+        
+        .decorative {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .decorative:nth-child(1) { top: -100px; left: -100px; }
+        .decorative:nth-child(2) { bottom: -100px; right: -100px; }
+    </style>
+</head>
+<body>
+    <div class="decorative"></div>
+    <div class="decorative"></div>
+    
+    <div class="container">
+        <div class="logo">weprompt</div>
+        <div class="tagline">Discover & Share AI Prompts</div>
+        <div class="subtitle">Join our community of AI enthusiasts and prompt engineers</div>
+    </div>
+    
+    <script>
+        // This HTML can be used to generate a PNG image for the main OG image
+        // You can screenshot this or use a tool like Puppeteer to generate the image
+        console.log('OG Image placeholder ready - dimensions: 1200x630px');
+    </script>
+</body>
+</html>

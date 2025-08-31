@@ -1,67 +1,59 @@
-# UPPrompt - AI Prompt Engineering Platform
+# Upprompt - AI Prompt Sharing Platform
 
-A modern, professional AI prompt engineering platform built with React, TypeScript, and Supabase. Create, test, and share AI prompts with real-time analytics and community features.
+A sophisticated platform for sharing, discovering, and collaborating on high-quality AI prompts. Built with React, TypeScript, and Supabase for modern web performance and real-time features.
 
-## ✨ Features
+## Features
 
-### 🎯 Core Functionality
-- **AI Prompt Creation & Management** - Build and organize your AI prompts
-- **Real-time Analytics Dashboard** - Track performance with live metrics
-- **Prompt Collections** - Curate and share themed prompt collections
-- **AI Prompt Tester** - Test prompts across multiple AI models
-- **Community Challenges** - Compete in themed prompt competitions
+### Core Functionality
+- **AI Prompt Creation & Management** - Build and organize your AI prompts with tags and collections
+- **Real-time Analytics Dashboard** - Track performance with live metrics and user insights
+- **Prompt Collections** - Curate and share themed prompt collections with the community
+- **AI Prompt Tester** - Test prompts across multiple AI models with cost estimation
+- **Community Challenges** - Participate in themed prompt competitions with voting systems
+- **Dynamic OpenGraph Images** - Automatically generated social media previews for each prompt
 
-### 🎨 Modern UI/UX
-- **Professional Design** - Market-level UI competing with top websites
-- **Yellow-Orange Theme** - Modern, warm color scheme with gradients
-- **Responsive Design** - Optimized for all devices and screen sizes
-- **Smooth Animations** - Beautiful transitions and hover effects
-- **Dark/Light Mode** - Enhanced theme support with proper contrast
+### User Experience
+- **Professional Design** - Clean, modern interface with yellow-orange theme
+- **Responsive Design** - Optimized for mobile, tablet, and desktop devices
+- **Dark/Light Mode** - Complete theme support with proper contrast ratios
+- **Smooth Animations** - Subtle transitions and hover effects throughout
+- **Search & Filtering** - Advanced search with tag-based filtering system
 
-### 🚀 Advanced Features
-- **Live Metrics** - Real-time data updates every 5 seconds
-- **Performance Tracking** - Weekly growth, user rankings, and trends
-- **Community Features** - User interactions, upvotes, and bookmarks
-- **Real-time Updates** - Live data without page refreshes
+### Social Features
+- **User Profiles** - Customizable profiles with avatar upload and statistics
+- **Community Interaction** - Upvote, bookmark, and share prompts
+- **Leaderboards** - Community rankings based on prompt popularity
+- **Real-time Updates** - Live data synchronization without page refreshes
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-- **Frontend**: React 18 + TypeScript
-- **UI Components**: Shadcn UI + Tailwind CSS
-- **Styling**: Custom CSS with CSS Variables
+- **Frontend**: React 18 + TypeScript + Vite
+- **UI Components**: Shadcn UI built on Radix UI primitives
+- **Styling**: Tailwind CSS with custom design system
 - **Charts**: Recharts for data visualization
-- **Backend**: Supabase (PostgreSQL + Real-time)
-- **Authentication**: Supabase Auth
-- **Icons**: Lucide React
-- **Fonts**: Inter + Montserrat + JetBrains Mono
+- **Backend**: Supabase (PostgreSQL + Real-time + Auth + Storage)
+- **State Management**: React Query for server state
+- **Icons**: Phosphor Icons
+- **Fonts**: Outfit, Montserrat, JetBrains Mono
 
-## 🎨 Design System
+## Design System
 
 ### Color Palette
-- **Primary**: Warm yellow-orange (#f59e0b)
-- **Secondary**: Complementary orange tones
-- **Accents**: Green, blue, and purple for different features
-- **Gradients**: Beautiful gradient combinations throughout
+- **Primary**: Warm amber (#f59e0b)
+- **Secondary**: Complementary orange and yellow tones
+- **Theme**: Full dark/light mode support with CSS custom properties
 
 ### Typography
-- **Display**: Montserrat for headings
-- **Body**: Inter for readable text
+- **Display**: Montserrat for headings and branding
+- **Body**: Outfit for readable body text
 - **Code**: JetBrains Mono for technical content
 
-### Animations
-- **Slide-up**: Smooth entrance animations
-- **Fade-in**: Elegant content reveals
-- **Scale-in**: Interactive element animations
-- **Hover effects**: Rich interactive feedback
+### Components
+- Consistent component library with shadcn/ui
+- Custom theme integration with Tailwind CSS
+- Responsive breakpoints and spacing system
 
-## 📱 Responsive Design
-
-- **Mobile First**: Optimized for mobile devices
-- **Tablet**: Adaptive layouts for medium screens
-- **Desktop**: Full-featured desktop experience
-- **Touch Friendly**: Optimized for touch interactions
-
-## 🚀 Getting Started
+## Getting Started
 
 1. **Clone the repository**
    ```bash
@@ -74,76 +66,99 @@ A modern, professional AI prompt engineering platform built with React, TypeScri
    npm install
    ```
 
-3. **Set up environment variables**
-   ```bash
-   cp .env.example .env.local
-   # Add your Supabase credentials
+3. **Environment Setup**
+   Create `.env.local` with your Supabase credentials:
+   ```
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
    ```
 
-4. **Run the development server**
+4. **Development Server**
    ```bash
    npm run dev
    ```
 
-5. **Open your browser**
-   Navigate to `http://localhost:5173`
+5. **Build for Production**
+   ```bash
+   npm run build
+   ```
 
-## 🔧 Configuration
+## Database Setup
 
-### Supabase Setup
+### Supabase Configuration
 1. Create a new Supabase project
-2. Set up your database tables
-3. Configure authentication
-4. Add your credentials to `.env.local`
+2. Set up authentication with OAuth providers (Google, GitHub)
+3. Configure Row Level Security (RLS) policies
+4. Set up real-time subscriptions for live updates
 
-### Customization
-- Modify colors in `src/index.css`
-- Update Tailwind config in `tailwind.config.ts`
-- Customize components in `src/components/`
+### Required Tables
+- `prompts` - Store AI prompts with metadata
+- `profiles` - User profile information
+- `up_prompts` - Upvote tracking
+- `bookmarks` - Saved prompts
+- `collections` - Prompt collections
+- `challenges` - Community challenges
 
-## 📊 Features in Detail
+## Features in Detail
 
-### Dashboard
-- **Live Metrics**: Real-time user activity, prompts, and interactions
-- **Performance Cards**: Beautiful gradient cards with growth indicators
-- **Quick Actions**: Easy access to common tasks
-- **Community Insights**: Trending content and challenges
-
-### Analytics
-- **Performance Tracking**: Weekly and monthly growth metrics
-- **User Rankings**: Community leaderboards
-- **Engagement Metrics**: Upvotes, bookmarks, and views
-- **Trend Analysis**: Visual charts and data insights
+### Analytics Dashboard
+- **User-specific Analytics** - Personal performance metrics and trends
+- **Weekly Growth Tracking** - Visual charts showing engagement over time
+- **Top Performing Content** - Identify your most successful prompts
+- **Community Insights** - See how you rank against other users
 
 ### Prompt Management
-- **Create & Edit**: Rich prompt creation interface
-- **Collections**: Organize prompts by theme or purpose
-- **Sharing**: Share prompts with the community
-- **Version Control**: Track prompt iterations
+- **Rich Text Editor** - Create detailed prompts with formatting
+- **Tag System** - Organize prompts with custom and suggested tags
+- **Preview Mode** - See exactly how prompts appear to others
+- **Quick Actions** - Copy, download, and share prompts easily
 
-## 🎯 Roadmap
+### Social Integration
+- **OpenGraph Support** - Dynamic social media previews
+- **Direct AI Platform Integration** - One-click prompt testing
+- **Community Features** - Follow users, bookmark favorites
+- **Sharing Tools** - Built-in sharing across social platforms
 
-- [ ] **AI Integration**: Direct API connections to AI models
-- [ ] **Advanced Analytics**: Machine learning insights
-- [ ] **Collaboration**: Team prompt development
-- [ ] **Marketplace**: Prompt monetization
-- [ ] **API Access**: Developer tools and integrations
+## Development Guidelines
 
-## 🤝 Contributing
+### Code Organization
+- Feature-based component structure
+- Shared utilities in `/lib` directory
+- Custom hooks in `/hooks` directory
+- Type definitions with TypeScript interfaces
 
-We welcome contributions! Please see our contributing guidelines for details.
+### Performance
+- React Query for efficient data fetching and caching
+- Lazy loading for route components
+- Optimized images and assets
+- Real-time subscriptions with automatic cleanup
 
-## 📄 License
+### Security
+- Row Level Security (RLS) on all database operations
+- Secure authentication with Supabase Auth
+- Input validation and sanitization
+- No sensitive data in client-side code
 
-This project is licensed under the MIT License.
+## Contributing
 
-## 🙏 Acknowledgments
+We welcome contributions to Upprompt. Please ensure:
+- Follow the existing code style and conventions
+- Add TypeScript types for all new features
+- Test your changes across different screen sizes
+- Update documentation for new features
 
-- Built with modern web technologies
-- Inspired by leading AI platforms
-- Community-driven development
-- Professional-grade design standards
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Deployment
+
+The application is optimized for deployment on modern hosting platforms:
+- **Vite Build**: Optimized production builds
+- **Static Assets**: Proper caching and CDN support
+- **Environment Variables**: Secure configuration management
+- **Database Migrations**: Version-controlled schema changes
 
 ---
 
-**UPPrompt** - Where AI meets creativity, powered by modern web technology.
+**Upprompt** - A sophisticated platform for AI prompt engineering and community collaboration.

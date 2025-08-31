@@ -1,18 +1,10 @@
 import { useState } from 'react';
 import { 
-  Search, 
+  MagnifyingGlass, 
   Sun, 
   Moon, 
-  Plus, 
-  Settings, 
-  LogOut, 
-  User, 
-  BarChart3, 
-  BookOpen, 
-  Zap, 
-  Trophy,
-  Menu
-} from 'lucide-react';
+  DotsThree
+} from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -50,8 +42,17 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
-    await signOut();
-    navigate('/auth');
+    try {
+      const { error } = await signOut();
+      if (error) {
+        console.error('Error signing out:', error);
+        return;
+      }
+      // Force page reload to ensure clean state
+      window.location.href = '/auth';
+    } catch (error) {
+      console.error('Error during signout:', error);
+    }
   };
 
   const handlePromptCreated = () => {
@@ -64,16 +65,16 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-primary rounded-btn flex items-center justify-center">
             <span className="text-primary-foreground font-heading text-lg">W</span>
           </div>
-          <span className="font-heading text-xl text-foreground hidden sm:block">upprompt</span>
+          <span className="font-display text-xl text-foreground hidden sm:block">upprompt</span>
         </div>
 
         {/* Desktop Search Bar with Filter */}
         <div className="hidden md:flex flex-1 max-w-xl mx-8 items-center space-x-2">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <MagnifyingGlass className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search prompts..."
               value={searchQuery}
@@ -106,10 +107,9 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
           {/* Create Post Button */}
           <Button 
             onClick={() => setIsCreateModalOpen(true)}
-            className="font-subheading transition-smooth hover:scale-105"
+            className="font-subheading transition-smooth hover:scale-105 shadow-custom hover:shadow-hover"
             size="sm"
           >
-            <Plus className="h-4 w-4 mr-2" />
             Create
           </Button>
 
@@ -130,60 +130,41 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
                 onClick={() => navigate('/profile')}
                 className="hover:bg-accent transition-fast cursor-pointer"
               >
-                <User className="mr-2 h-4 w-4" />
                 <span className="font-body">Profile</span>
               </DropdownMenuItem>
-              
-              <DropdownMenuItem
-                onClick={() => navigate('/dashboard')}
-                className="hover:bg-accent transition-fast cursor-pointer"
-              >
-                <BarChart3 className="mr-2 h-4 w-4" />
-                <span className="font-body">Dashboard</span>
-              </DropdownMenuItem>
-              
               <DropdownMenuItem
                 onClick={() => navigate('/analytics')}
                 className="hover:bg-accent transition-fast cursor-pointer"
               >
-                <BarChart3 className="mr-2 h-4 w-4" />
                 <span className="font-body">Analytics</span>
               </DropdownMenuItem>
-              
+
               <DropdownMenuItem
                 onClick={() => navigate('/collections')}
                 className="hover:bg-accent transition-fast cursor-pointer"
               >
-                <BookOpen className="mr-2 h-4 w-4" />
                 <span className="font-body">Collections</span>
-              </DropdownMenuItem>
-              
+              </DropdownMenuItem> 
               <DropdownMenuItem
                 onClick={() => navigate('/tester')}
                 className="hover:bg-accent transition-fast cursor-pointer"
               >
-                <Zap className="mr-2 h-4 w-4" />
                 <span className="font-body">Prompt Tester</span>
               </DropdownMenuItem>
-              
               <DropdownMenuItem
                 onClick={() => navigate('/challenges')}
                 className="hover:bg-accent transition-fast cursor-pointer"
               >
-                <Trophy className="mr-2 h-4 w-4" />
                 <span className="font-body">Challenges</span>
               </DropdownMenuItem>
-              
               <DropdownMenuItem
                 onClick={() => navigate('/settings')}
                 className="hover:bg-accent transition-fast cursor-pointer"
               >
-                <Settings className="mr-2 h-4 w-4" />
                 <span className="font-body">Settings</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleSignOut} className="hover:bg-accent transition-fast text-destructive">
-                <LogOut className="mr-2 h-4 w-4" />
                 <span className="font-body">Logout</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -204,12 +185,11 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
               <Moon className="h-4 w-4" />
             )}
           </Button>
-          
           {/* Mobile Menu */}
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
-                <Menu className="h-4 w-4" />
+                <DotsThree className="h-4 w-4" />
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-80 bg-background border-border">
@@ -235,7 +215,7 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
                 {/* Search */}
                 <div className="space-y-3">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <MagnifyingGlass className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       placeholder="Search prompts..."
                       value={searchQuery}
@@ -259,8 +239,7 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
                       setIsMobileMenuOpen(false);
                     }}
                   >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create Prompt
+                            Create Prompt
                   </Button>
                   
                   <Button 
@@ -271,22 +250,8 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
                       setIsMobileMenuOpen(false);
                     }}
                   >
-                    <User className="h-4 w-4 mr-2" />
                     <span>Profile</span>
                   </Button>
-                      
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start"
-                        onClick={() => {
-                          navigate('/dashboard');
-                          setIsMobileMenuOpen(false);
-                        }}
-                      >
-                        <BarChart3 className="h-4 w-4 mr-2" />
-                        <span>Dashboard</span>
-                      </Button>
-                      
                       <Button
                         variant="ghost"
                         className="w-full justify-start"
@@ -295,7 +260,6 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
                           setIsMobileMenuOpen(false);
                         }}
                       >
-                        <BarChart3 className="h-4 w-4 mr-2" />
                         <span>Analytics</span>
                       </Button>
                       
@@ -307,10 +271,8 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
                           setIsMobileMenuOpen(false);
                         }}
                       >
-                        <BookOpen className="h-4 w-4 mr-2" />
                         <span>Collections</span>
                       </Button>
-                      
                       <Button
                         variant="ghost"
                         className="w-full justify-start"
@@ -319,10 +281,8 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
                           setIsMobileMenuOpen(false);
                         }}
                       >
-                        <Zap className="h-4 w-4 mr-2" />
                         <span>Prompt Tester</span>
                       </Button>
-                      
                       <Button
                         variant="ghost"
                         className="w-full justify-start"
@@ -331,10 +291,8 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
                           setIsMobileMenuOpen(false);
                         }}
                       >
-                        <Trophy className="h-4 w-4 mr-2" />
                         <span>Challenges</span>
                       </Button>
-                      
                       <Button
                         variant="ghost"
                         className="w-full justify-start"
@@ -343,10 +301,8 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
                           setIsMobileMenuOpen(false);
                         }}
                       >
-                        <Settings className="h-4 w-4 mr-2" />
                         <span>Settings</span>
                       </Button>
-                  
                   <Button 
                     variant="ghost"
                     className="w-full justify-start text-destructive hover:text-destructive"
@@ -355,7 +311,6 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
                       setIsMobileMenuOpen(false);
                     }}
                   >
-                    <LogOut className="h-4 w-4 mr-2" />
                     Logout
                   </Button>
                 </div>
@@ -370,7 +325,7 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center space-x-2">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <MagnifyingGlass className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search prompts..."
                 value={searchQuery}

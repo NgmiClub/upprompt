@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Trophy, Calendar, Users, Target, Award, Star, Clock, TrendingUp, Lightbulb, Zap } from 'lucide-react';
+import { Trophy, Calendar, Users, Target, Medal, Star, Clock, ArrowUp, Lightbulb, Bolt } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -449,7 +449,7 @@ export function PromptChallenges() {
                   </Badge>
                   {challenge.prize_pool > 0 && (
                     <div className="flex items-center space-x-1 text-yellow-600">
-                      <Award className="h-4 w-4" />
+                      <Medal className="h-4 w-4" />
                       <span className="text-sm font-medium">${challenge.prize_pool}</span>
                     </div>
                   )}
@@ -513,7 +513,7 @@ export function PromptChallenges() {
                         setShowSubmitDialog(true);
                       }}
                     >
-                      <Zap className="h-4 w-4 mr-1" />
+                      <Bolt className="h-4 w-4 mr-1" />
                       Submit
                     </Button>
                   )}
@@ -609,7 +609,7 @@ export function PromptChallenges() {
                       size="sm"
                       onClick={() => setShowSubmitDialog(true)}
                     >
-                      <Zap className="h-4 w-4 mr-2" />
+                      <Bolt className="h-4 w-4 mr-2" />
                       Submit Entry
                     </Button>
                   )}
@@ -645,7 +645,7 @@ export function PromptChallenges() {
                                 <span>{new Date(submission.created_at).toLocaleDateString()}</span>
                                 <span>•</span>
                                 <span className="flex items-center space-x-1">
-                                  <TrendingUp className="h-3 w-3" />
+                                  <ArrowUp className="h-3 w-3" />
                                   <span>{submission.upvotes}</span>
                                 </span>
                               </div>
@@ -657,7 +657,7 @@ export function PromptChallenges() {
                                 size="sm"
                                 onClick={() => upvoteSubmission(submission.id)}
                               >
-                                <TrendingUp className="h-4 w-4 mr-1" />
+                                <ArrowUp className="h-4 w-4 mr-1" />
                                 Vote
                               </Button>
                             )}

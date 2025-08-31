@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Play, Square, Copy, Download, Settings, Zap, Clock, MessageSquare, Bot, User } from 'lucide-react';
+import { Play, Stop, Copy, Download, Gear, Bolt, Clock, ChatCircle, Robot, User } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -262,7 +262,7 @@ export function PromptTester() {
             size="sm"
             onClick={() => setShowSettings(!showSettings)}
           >
-            <Settings className="h-4 w-4 mr-2" />
+            <Gear className="h-4 w-4 mr-2" />
             Settings
           </Button>
           <Button
@@ -395,7 +395,7 @@ export function PromptTester() {
                 <div className="flex items-center space-x-2">
                   {isTesting ? (
                     <Button onClick={stopTest} variant="destructive">
-                      <Square className="h-4 w-4 mr-2" />
+                      <Stop className="h-4 w-4 mr-2" />
                       Stop
                     </Button>
                   ) : (

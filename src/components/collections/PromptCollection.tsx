@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit3, Trash2, Share2, Lock, Unlock, Users, BookOpen, Heart } from 'lucide-react';
+import { Plus, PencilSimple, Trash, ShareNetwork, Lock, LockOpen, Users, BookOpen, Heart } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -401,7 +401,7 @@ export function PromptCollection() {
                   </div>
                   <div className="flex items-center space-x-1 ml-2">
                     {collection.is_public ? (
-                      <Unlock className="h-4 w-4 text-green-500" />
+                      <LockOpen className="h-4 w-4 text-green-500" />
                     ) : (
                       <Lock className="h-4 w-4 text-muted-foreground" />
                     )}
@@ -448,14 +448,14 @@ export function PromptCollection() {
                     size="sm"
                     onClick={() => handleEditCollection(collection)}
                   >
-                    <Edit3 className="h-4 w-4" />
+                    <PencilSimple className="h-4 w-4" />
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => deleteCollection(collection.id)}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash className="h-4 w-4" />
                   </Button>
                 </div>
               </CardContent>
@@ -570,7 +570,7 @@ export function PromptCollection() {
                             size="sm"
                             onClick={() => removePromptFromCollection(selectedCollection.id, prompt.id)}
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash className="h-4 w-4" />
                           </Button>
                         </div>
                       </CardContent>

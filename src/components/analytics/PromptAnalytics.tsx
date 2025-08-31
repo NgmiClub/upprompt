@@ -1,38 +1,36 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Navigation } from '@/components/shared/Navigation';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
-import { 
-  BarChart3, 
-  TrendingUp, 
-  Users, 
-  Heart, 
-  Bookmark, 
-  Eye, 
-  Target, 
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import {
+  Pulse,
+  CaretDown,
+  CaretUp,
+  ChartBar,
+  BookmarkSimple,
   Calendar,
   Clock,
-  Zap,
-  Trophy,
+  Eye,
+  Heart,
+  Minus,
   Star,
-  Activity,
-  ArrowUp,
-  ArrowDown,
-  Minus
-} from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
-import { Navigation } from '@/components/shared/Navigation';
+  Target,
+  Trophy,
+  Users,
+  Lightning
+} from '@phosphor-icons/react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 interface AnalyticsData {
   totalPrompts: number;
   totalUpvotes: number;
-  totalBookmarks: number;
+  totalBookmarkSimples: number;
   totalViews: number;
   weeklyGrowth: {
     prompts: number;
@@ -98,28 +96,24 @@ export function PromptAnalytics() {
         endDate.setDate(0);
         endDate.setHours(23, 59, 59, 999);
 
-        const [
-          { count: monthPrompts },
-          { count: monthUpvotes },
-          { count: monthBookmarks }
-        ] = await Promise.all([
-          supabase.from('prompts').select('*', { count: 'exact', head: true })
-            .gte('created_at', startDate.toISOString())
-            .lte('created_at', endDate.toISOString()),
-          supabase.from('up_prompts').select('*', { count: 'exact', head: true })
-            .gte('created_at', startDate.toISOString())
-            .lte('created_at', endDate.toISOString()),
-          supabase.from('bookmarks').select('*', { count: 'exact', head: true })
-            .gte('created_at', startDate.toISOString())
-            .lte('created_at', endDate.toISOString())
-        ]);
+        // Get user's prompts for this month
+        const { data: userPromptsInMonth } = await supabase
+          .from('prompts_with_stats')
+          .select('*')
+          .eq('user_id', user?.id)
+          .gte('created_at', startDate.toISOString())
+          .lte('created_at', endDate.toISOString());
+
+        const monthPrompts = userPromptsInMonth?.length || 0;
+        const monthUpvotes = userPromptsInMonth?.reduce((sum, p) => sum + (p.upvotes || 0), 0) || 0;
+        const monthBookmarks = userPromptsInMonth?.reduce((sum, p) => sum + (p.bookmarks || 0), 0) || 0;
 
         trends.push({
           month: monthName,
-          prompts: monthPrompts || 0,
-          upvotes: monthUpvotes || 0,
-          bookmarks: monthBookmarks || 0,
-          views: (monthPrompts || 0) * 3 + (monthUpvotes || 0) * 2
+          prompts: monthPrompts,
+          upvotes: monthUpvotes,
+          bookmarks: monthBookmarks,
+          views: monthPrompts * 3 + monthUpvotes * 2
         });
       }
 
@@ -132,14 +126,15 @@ export function PromptAnalytics() {
 
   const getTopTags = async () => {
     try {
-      const { data: allPrompts } = await supabase
+      const { data: userPrompts } = await supabase
         .from('prompts_with_stats')
-        .select('tags, upvotes');
+        .select('tags, upvotes')
+        .eq('user_id', user?.id);
 
-      if (!allPrompts) return [];
+      if (!userPrompts) return [];
 
       const tagStats = new Map();
-      allPrompts.forEach(prompt => {
+      userPrompts.forEach(prompt => {
         if (prompt.tags) {
           prompt.tags.forEach((tag: string) => {
             if (!tagStats.has(tag)) {
@@ -180,16 +175,16 @@ export function PromptAnalytics() {
       allPrompts.forEach(prompt => {
         const userId = prompt.user_id;
         if (!userStats.has(userId)) {
-          userStats.set(userId, { totalUpvotes: 0, totalBookmarks: 0 });
+          userStats.set(userId, { totalUpvotes: 0, totalBookmarkSimples: 0 });
         }
         const stats = userStats.get(userId);
         stats.totalUpvotes += prompt.upvotes || 0;
-        stats.totalBookmarks += prompt.bookmarks || 0;
+        stats.totalBookmarkSimples += prompt.bookmarks || 0;
       });
 
       const sortedUsers = Array.from(userStats.entries())
         .map(([id, stats]) => ({ id, ...stats }))
-        .sort((a, b) => (b.totalUpvotes + b.totalBookmarks) - (a.totalUpvotes + a.totalBookmarks));
+        .sort((a, b) => (b.totalUpvotes + b.totalBookmarkSimples) - (a.totalUpvotes + a.totalBookmarkSimples));
 
       const userIndex = sortedUsers.findIndex(u => u.id === user?.id);
       return userIndex >= 0 ? userIndex + 1 : 0;
@@ -205,21 +200,22 @@ export function PromptAnalytics() {
       weekAgo.setDate(weekAgo.getDate() - 7);
       const weekAgoISO = weekAgo.toISOString();
 
-      const [
-        { count: weeklyPrompts },
-        { count: weeklyUpvotes },
-        { count: weeklyBookmarks }
-      ] = await Promise.all([
-        supabase.from('prompts').select('*', { count: 'exact', head: true }).gte('created_at', weekAgoISO),
-        supabase.from('up_prompts').select('*', { count: 'exact', head: true }).gte('created_at', weekAgoISO),
-        supabase.from('bookmarks').select('*', { count: 'exact', head: true }).gte('created_at', weekAgoISO)
-      ]);
+      // Get user's prompts from the last week
+      const { data: userWeeklyPrompts } = await supabase
+        .from('prompts_with_stats')
+        .select('*')
+        .eq('user_id', user?.id)
+        .gte('created_at', weekAgoISO);
+
+      const weeklyPrompts = userWeeklyPrompts?.length || 0;
+      const weeklyUpvotes = userWeeklyPrompts?.reduce((sum, p) => sum + (p.upvotes || 0), 0) || 0;
+      const weeklyBookmarks = userWeeklyPrompts?.reduce((sum, p) => sum + (p.bookmarks || 0), 0) || 0;
 
       return {
-        prompts: weeklyPrompts || 0,
-        upvotes: weeklyUpvotes || 0,
-        bookmarks: weeklyBookmarks || 0,
-        views: (weeklyPrompts || 0) * 3 + (weeklyUpvotes || 0) * 2
+        prompts: weeklyPrompts,
+        upvotes: weeklyUpvotes,
+        bookmarks: weeklyBookmarks,
+        views: weeklyPrompts * 3 + weeklyUpvotes * 2
       };
     } catch (error) {
       console.error('Error calculating weekly growth:', error);
@@ -227,11 +223,11 @@ export function PromptAnalytics() {
     }
   };
 
-  const calculatePerformanceMetrics = (totalPrompts: number, totalUpvotes: number, totalBookmarks: number) => {
-    const engagementRate = totalPrompts > 0 ? Math.round((totalUpvotes + totalBookmarks) / totalPrompts * 100) : 0;
+  const calculatePerformanceMetrics = (totalPrompts: number, totalUpvotes: number, totalBookmarkSimples: number) => {
+    const engagementRate = totalPrompts > 0 ? Math.round((totalUpvotes + totalBookmarkSimples) / totalPrompts * 100) : 0;
     const growthRate = totalPrompts > 0 ? Math.round((totalUpvotes / totalPrompts) * 100) : 0;
-    const communityScore = totalUpvotes > 0 ? Math.round((totalUpvotes / (totalUpvotes + totalBookmarks)) * 100) : 0;
-    const innovationIndex = totalPrompts > 0 ? Math.round((totalBookmarks / totalPrompts) * 100) : 0;
+    const communityScore = totalUpvotes > 0 ? Math.round((totalUpvotes / (totalUpvotes + totalBookmarkSimples)) * 100) : 0;
+    const innovationIndex = totalPrompts > 0 ? Math.round((totalBookmarkSimples / totalPrompts) * 100) : 0;
     const consistencyScore = totalPrompts > 0 ? Math.round((totalUpvotes / totalPrompts) * 50) : 0;
     const reachScore = totalUpvotes > 0 ? Math.round((totalUpvotes / totalPrompts) * 100) : 0;
 
@@ -256,18 +252,17 @@ export function PromptAnalytics() {
         .order('created_at', { ascending: false });
 
       // Fetch global stats
-      const [
-        { count: totalUsersCount },
-        { count: totalViewsCount }
-      ] = await Promise.all([
-        supabase.from('profiles').select('*', { count: 'exact', head: true }),
-        supabase.from('prompts').select('*', { count: 'exact', head: true })
-      ]);
+      const { count: totalUsersCount } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true });
 
       if (promptsData) {
         const totalPrompts = promptsData.length;
         const totalUpvotes = promptsData.reduce((sum, p) => sum + (typeof p.upvotes === 'number' ? p.upvotes : 0), 0);
-        const totalBookmarks = promptsData.reduce((sum, p) => sum + (typeof p.bookmarks === 'number' ? p.bookmarks : 0), 0);
+        const totalBookmarkSimples = promptsData.reduce((sum, p) => sum + (typeof p.bookmarks === 'number' ? p.bookmarks : 0), 0);
+        
+        // Calculate user-specific views (estimated based on user's engagement)
+        const totalViews = totalPrompts * 3 + totalUpvotes * 2 + totalBookmarkSimples;
 
         // Calculate real monthly trends
         const monthlyTrends = await calculateMonthlyTrends();
@@ -279,13 +274,13 @@ export function PromptAnalytics() {
         const userRanking = await calculateUserRanking();
 
         // Calculate performance metrics
-        const performanceMetrics = calculatePerformanceMetrics(totalPrompts, totalUpvotes, totalBookmarks);
+        const performanceMetrics = calculatePerformanceMetrics(totalPrompts, totalUpvotes, totalBookmarkSimples);
 
         setAnalyticsData({
           totalPrompts,
           totalUpvotes,
-          totalBookmarks,
-          totalViews: totalViewsCount || 0,
+          totalBookmarkSimples,
+          totalViews,
           weeklyGrowth: await calculateWeeklyGrowth(),
           monthlyTrends,
           topTags,
@@ -302,8 +297,8 @@ export function PromptAnalytics() {
   };
 
   const getGrowthIcon = (value: number) => {
-    if (value > 0) return <ArrowUp className="h-4 w-4 text-primary" />;
-    if (value < 0) return <ArrowDown className="h-4 w-4 text-muted-foreground" />;
+    if (value > 0) return <CaretUp className="h-4 w-4 text-primary" />;
+    if (value < 0) return <CaretDown className="h-4 w-4 text-muted-foreground" />;
     return <Minus className="h-4 w-4 text-muted-foreground" />;
   };
 
@@ -317,7 +312,7 @@ export function PromptAnalytics() {
     return (
       <div className="min-h-screen bg-background p-6">
         <Navigation />
-        <div className="max-w-7xl mx-auto space-y-6">
+        <div className="max-w-7xl mx-auto space-y-6 px-5">
           <div className="animate-pulse">
             <div className="h-8 bg-muted rounded w-64 mb-2"></div>
             <div className="h-4 bg-muted rounded w-96"></div>
@@ -356,21 +351,18 @@ export function PromptAnalytics() {
       <Navigation />
       
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto p-6 space-y-8">
+      <div className="max-w-7xl mx-auto p-4 space-y-6 px-5">
         {/* Header */}
-        <div className="space-y-2 animate-slide-up">
+        <div className="space-y-2 animate-slide-up -py-8">
           <h1 className="text-4xl font-display text-foreground">
-            Analytics Dashboard
+            Analytics
           </h1>
-          <p className="text-xl text-muted-foreground">
-            Track your prompt performance and community engagement
-          </p>
         </div>
 
         {/* Time Range Selector */}
         <div className="flex items-center gap-4">
           <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-32 border-border">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -380,10 +372,6 @@ export function PromptAnalytics() {
               <SelectItem value="1y">Last year</SelectItem>
             </SelectContent>
           </Select>
-          <Badge variant="secondary">
-            <Clock className="h-3 w-3 mr-1" />
-            {timeRange === '7d' ? '7 days' : timeRange === '30d' ? '30 days' : timeRange === '90d' ? '90 days' : '1 year'}
-          </Badge>
         </div>
 
         {/* Key Metrics */}
@@ -434,11 +422,11 @@ export function PromptAnalytics() {
                 Total Bookmarks
               </CardTitle>
               <div className="p-2 bg-primary/10 rounded-lg">
-                <Bookmark className="h-5 w-5 text-primary" />
+                <BookmarkSimple className="h-5 w-5 text-primary" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-primary">{analyticsData.totalBookmarks.toLocaleString()}</div>
+              <div className="text-3xl font-bold text-primary">{analyticsData.totalBookmarkSimples.toLocaleString()}</div>
               <div className="flex items-center gap-2 mt-2">
                 {getGrowthIcon(analyticsData.weeklyGrowth.bookmarks)}
                 <span className={`text-sm ${getGrowthColor(analyticsData.weeklyGrowth.bookmarks)}`}>
@@ -471,11 +459,11 @@ export function PromptAnalytics() {
 
         {/* Charts and Analytics */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="performance">Performance</TabsTrigger>
             <TabsTrigger value="trends">Trends</TabsTrigger>
-            <TabsTrigger value="insights">Insights</TabsTrigger>
+            {/* <TabsTrigger value="insights">Insights</TabsTrigger> */}
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -484,7 +472,7 @@ export function PromptAnalytics() {
               <Card className="border border-border">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-primary" />
+                    <CaretUp className="h-5 w-5 text-primary" />
                     Monthly Trends
                   </CardTitle>
                   <CardDescription>
@@ -567,7 +555,7 @@ export function PromptAnalytics() {
               <Card className="border border-border">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Activity className="h-5 w-5 text-primary" />
+                    <Pulse className="h-5 w-5 text-primary" />
                     Performance Metrics
                   </CardTitle>
                   <CardDescription>
@@ -622,7 +610,7 @@ export function PromptAnalytics() {
             <Card className="border border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5 text-primary" />
+                  <ChartBar className="h-5 w-5 text-primary" />
                   Engagement Trends
                 </CardTitle>
                 <CardDescription>
@@ -655,7 +643,7 @@ export function PromptAnalytics() {
               <Card className="border border-border">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Zap className="h-5 w-5 text-primary" />
+                    <Lightning className="h-5 w-5 text-primary" />
                     Quick Insights
                   </CardTitle>
                 </CardHeader>

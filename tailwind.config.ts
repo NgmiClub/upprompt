@@ -19,8 +19,8 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				sans: ['Inter', 'system-ui', 'sans-serif'],
-				display: ['Montserrat', 'Inter', 'system-ui', 'sans-serif'],
+				sans: ['Outfit', 'system-ui', 'sans-serif'],
+				display: ['Outfit', 'system-ui', 'sans-serif'],
 				mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
 			},
 			colors: {
@@ -72,7 +72,10 @@ export default {
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
+				sm: 'calc(var(--radius) - 4px)',
+				card: '12px',
+				btn: '8px',
+				input: '6px'
 			},
 			keyframes: {
 				'accordion-down': {
@@ -121,6 +124,8 @@ export default {
 				'white-soft': '0 2px 15px -3px rgba(255, 255, 255, 0.07), 0 10px 20px -2px rgba(255, 255, 255, 0.04)',
 				'white-medium': '0 4px 25px -5px rgba(255, 255, 255, 0.1), 0 10px 10px -5px rgba(255, 255, 255, 0.04)',
 				'white-large': '0 10px 40px -10px rgba(255, 255, 255, 0.15), 0 2px 10px -2px rgba(255, 255, 255, 0.05)',
+				'custom': '0 3px 12px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04)',
+				'hover': '0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06)'
 			}
 		}
 	},

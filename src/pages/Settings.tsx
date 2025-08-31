@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Lock, Eye, EyeOff, CheckCircle, AlertCircle } from 'lucide-react';
+import { ArrowLeft, User, Lock, Eye, EyeSlash, CheckCircle, Warning } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -154,9 +154,8 @@ export function Settings() {
             className="hover:bg-accent transition-fast"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
+          <h1 className="font-heading text-xl sm:text-xl text-foreground">Settings</h1>
           </Button>
-          <h1 className="font-heading text-2xl sm:text-3xl text-foreground">Settings</h1>
         </div>
 
         <div className="space-y-6">
@@ -228,7 +227,7 @@ export function Settings() {
                     onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                   >
                     {showCurrentPassword ? (
-                      <EyeOff className="h-4 w-4" />
+                      <EyeSlash className="h-4 w-4" />
                     ) : (
                       <Eye className="h-4 w-4" />
                     )}
@@ -256,7 +255,7 @@ export function Settings() {
                     onClick={() => setShowNewPassword(!showNewPassword)}
                   >
                     {showNewPassword ? (
-                      <EyeOff className="h-4 w-4" />
+                      <EyeSlash className="h-4 w-4" />
                     ) : (
                       <Eye className="h-4 w-4" />
                     )}
@@ -287,7 +286,7 @@ export function Settings() {
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
                     {showConfirmPassword ? (
-                      <EyeOff className="h-4 w-4" />
+                      <EyeSlash className="h-4 w-4" />
                     ) : (
                       <Eye className="h-4 w-4" />
                     )}
@@ -298,7 +297,7 @@ export function Settings() {
                     {newPassword === confirmPassword ? (
                       <CheckCircle className="h-4 w-4 text-green-500" />
                     ) : (
-                      <AlertCircle className="h-4 w-4 text-red-500" />
+                      <Warning className="h-4 w-4 text-red-500" />
                     )}
                     <span className={`font-caption text-xs ${
                       newPassword === confirmPassword ? 'text-green-600' : 'text-red-600'

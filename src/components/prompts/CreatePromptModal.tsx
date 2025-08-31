@@ -1,15 +1,16 @@
-import { useState } from 'react';
-import { X, Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
+// Using text alternatives for icons
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -39,8 +40,32 @@ export function CreatePromptModal({ isOpen, onClose, onPromptCreated }: CreatePr
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [customTag, setCustomTag] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userProfile, setUserProfile] = useState<any>(null);
   const { toast } = useToast();
   const { user } = useAuth();
+
+  useEffect(() => {
+    if (user && isOpen) {
+      fetchUserProfile();
+    }
+  }, [user, isOpen]);
+
+  const fetchUserProfile = async () => {
+    if (!user) return;
+    
+    try {
+      const { data } = await supabase
+        .from('profiles')
+        .select('avatar_url, username')
+        .eq('user_id', user.id)
+        .single();
+      
+      setUserProfile(data);
+    } catch (error) {
+      // Profile might not exist yet, use OAuth data
+      setUserProfile(null);
+    }
+  };
 
   const handleTagToggle = (tag: string) => {
     setSelectedTags(prev => 
@@ -75,18 +100,25 @@ export function CreatePromptModal({ isOpen, onClose, onPromptCreated }: CreatePr
     }
 
     setIsSubmitting(true);
+    console.log('Starting prompt creation...', { user_id: user.id, title: title.trim(), content: content.trim(), tags: selectedTags });
     
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('prompts')
         .insert({
           user_id: user.id,
           title: title.trim(),
           content: content.trim(),
           tags: selectedTags
-        });
+        })
+        .select();
 
-      if (error) throw error;
+      console.log('Supabase response:', { data, error });
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
       
       toast({
         description: 'Prompt created successfully!',
@@ -97,9 +129,11 @@ export function CreatePromptModal({ isOpen, onClose, onPromptCreated }: CreatePr
       setSelectedTags([]);
       setCustomTag('');
       onPromptCreated();
+      onClose();
     } catch (error) {
+      console.error('Error creating prompt:', error);
       toast({
-        description: 'Failed to create prompt',
+        description: `Failed to create prompt: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: 'destructive',
       });
     } finally {
@@ -121,9 +155,13 @@ export function CreatePromptModal({ isOpen, onClose, onPromptCreated }: CreatePr
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto bg-card border-border mx-auto my-4 p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="font-heading text-lg sm:text-xl text-foreground">
-            Create New Prompt
-          </DialogTitle>
+          <div className="flex items-center gap-3 mb-2">
+            <div>
+              <DialogTitle className="font-heading text-lg sm:text-xl text-foreground">
+                Create New Prompt
+              </DialogTitle>
+            </div>
+          </div>
         </DialogHeader>
 
         <div className="space-y-4 sm:space-y-6">
@@ -169,7 +207,6 @@ export function CreatePromptModal({ isOpen, onClose, onPromptCreated }: CreatePr
                     onClick={() => handleTagToggle(tag)}
                   >
                     {tag}
-                    <X className="h-3 w-3 ml-1" />
                   </Badge>
                 ))}
               </div>
@@ -194,7 +231,7 @@ export function CreatePromptModal({ isOpen, onClose, onPromptCreated }: CreatePr
                 disabled={!customTag.trim()}
                 className="border-border hover:bg-accent transition-fast px-3 w-full sm:w-auto"
               >
-                <Plus className="h-4 w-4" />
+                Add
               </Button>
             </div>
 

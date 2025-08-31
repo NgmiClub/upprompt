@@ -1,24 +1,14 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { QuickCreateBox } from '@/components/prompts/QuickCreateBox';
 import { Navigation } from '@/components/shared/Navigation';
-import { 
-  Heart, 
-  Bookmark, 
-  Share2, 
-  MoreHorizontal, 
-  Plus,
-  Copy,
-  Download,
-  ThumbsUp,
-  MessageCircle
-} from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,13 +16,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { metaTagsManager } from '@/utils/metaUtils';
+import {
+  BookmarkSimple,
+  Copy,
+  DotsThree,
+  Download,
+  Heart,
+  ShareNetwork
+} from '@phosphor-icons/react';
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 interface Prompt {
   id: string;
@@ -67,7 +66,6 @@ export function Home() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardUser[]>([]);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [filterTags, setFilterTags] = useState<string[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createForm, setCreateForm] = useState({
     title: '',
@@ -94,10 +92,9 @@ export function Home() {
   const { toast } = useToast();
 
   useEffect(() => {
-    const search = searchParams.get('search');
-    if (search) {
-      setSearchQuery(search);
-    }
+    // Reset meta tags to default when on home page
+    metaTagsManager.resetToDefault();
+    
     loadPrompts();
     loadTrendingPrompts();
     loadLeaderboard();
@@ -124,7 +121,9 @@ export function Home() {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (searchQuery.trim()) {
+      // Handle search parameter
+      const searchQuery = searchParams.get('search');
+      if (searchQuery) {
         query = query.or(`title.ilike.%${searchQuery}%,content.ilike.%${searchQuery}%`);
       }
 
@@ -319,7 +318,7 @@ export function Home() {
     }
   };
 
-  const handleBookmark = async (promptId: string) => {
+  const handleBookmarkSimple = async (promptId: string) => {
     if (!user) {
       toast({
         title: "Please sign in",
@@ -329,10 +328,10 @@ export function Home() {
       return;
     }
 
-    const isBookmarked = userInteractions.bookmarks.has(promptId);
+    const isBookmarkSimpleed = userInteractions.bookmarks.has(promptId);
     
     try {
-      if (isBookmarked) {
+      if (isBookmarkSimpleed) {
         await supabase
           .from('bookmarks')
           .delete()
@@ -346,20 +345,20 @@ export function Home() {
 
       setUserInteractions(prev => ({
         ...prev,
-        bookmarks: isBookmarked 
+        bookmarks: isBookmarkSimpleed 
           ? new Set([...prev.bookmarks].filter(id => id !== promptId))
           : new Set([...prev.bookmarks, promptId])
       }));
 
       setPrompts(prev => prev.map(prompt => 
         prompt.id === promptId 
-          ? { ...prompt, bookmarks: prompt.bookmarks + (isBookmarked ? -1 : 1) }
+          ? { ...prompt, bookmarks: prompt.bookmarks + (isBookmarkSimpleed ? -1 : 1) }
           : prompt
       ));
 
       toast({
-        title: isBookmarked ? "Bookmark removed" : "Bookmarked!",
-        description: isBookmarked ? "Removed from bookmarks" : "Added to bookmarks!",
+        title: isBookmarkSimpleed ? "BookmarkSimple removed" : "BookmarkSimpleed!",
+        description: isBookmarkSimpleed ? "Removed from bookmarks" : "Added to bookmarks!",
       });
     } catch (error) {
       console.error('Error updating bookmark:', error);
@@ -393,15 +392,32 @@ export function Home() {
 
   const copyToClipboard = async (text: string) => {
     try {
-      await navigator.clipboard.writeText(text);
+      // Try modern clipboard API first
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // Fallback to older method
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+      
       toast({
         title: "Copied!",
         description: "Link copied to clipboard",
       });
     } catch (error) {
+      console.error('Failed to copy:', error);
       toast({
         title: "Error",
-        description: "Failed to copy to clipboard",
+        description: "Failed to copy to clipboard. Please copy the URL manually.",
         variant: "destructive",
       });
     }
@@ -512,131 +528,91 @@ export function Home() {
 
   const clearFilters = () => {
     setFilterTags([]);
-    setSearchQuery('');
   };
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Sidebar */}
           <div className="lg:col-span-3 space-y-6">
-            {/* Quick Stats */}
-            <div className="p-6 bg-primary/5 rounded-xl border border-primary/20">
-              <h3 className="font-semibold text-foreground mb-4">Quick Stats</h3>
+            {/* Community Stats */}
+            <div className="p-6 bg-primary/5 rounded-xl border border-primary/10">
+              <h3 className="font-semibold text-foreground mb-4">Stats</h3>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Total Prompts</span>
+                  <span className="text-muted-foreground">Prompts</span>
                   <span className="font-medium">{stats.totalPrompts.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Active Users</span>
-                  <span className="font-medium">{stats.activeUsers.toLocaleString()}</span>
+                  <span className="text-muted-foreground">Users</span>
+                  <span className="font-medium">{stats.totalUsers.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Today's Posts</span>
-                  <span className="font-medium">{stats.todayPosts.toLocaleString()}</span>
+                  <span className="text-muted-foreground">Upvotes</span>
+                  <span className="font-medium">{stats.totalUpvotes.toLocaleString()}</span>
                 </div>
               </div>
             </div>
 
-            {/* Create Prompt */}
-            <div className="p-6 bg-primary/5 rounded-xl border border-primary/20">
-              <div className="text-center">
-                <Plus className="h-8 w-8 text-primary mx-auto mb-3" />
-                <h3 className="font-semibold text-foreground mb-2">Create Prompt</h3>
-                <Button 
-                  onClick={() => setIsCreateModalOpen(true)} 
-                  className="w-full bg-primary hover:bg-primary/90"
-                >
-                  New Prompt
-                </Button>
-              </div>
-            </div>
 
-            {/* Available Filters */}
-            <div className="p-6 bg-primary/5 rounded-xl border border-primary/20">
-              <h3 className="font-semibold text-foreground mb-4">Filters</h3>
-              <div className="space-y-2">
-                {availableTags.slice(0, 8).map((tag) => (
-                  <button
-                    key={tag}
-                    onClick={() => toggleTagFilter(tag)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors truncate ${
-                      filterTags.includes(tag)
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-secondary hover:bg-secondary/80 text-foreground'
-                    }`}
-                    title={tag}
-                  >
-                    #{tag}
-                  </button>
-                ))}
-                {availableTags.length > 8 && (
-                  <div className="text-xs text-muted-foreground text-center py-2">
-                    +{availableTags.length - 8} more tags
-                  </div>
-                )}
-                {filterTags.length > 0 && (
-                  <Button
-                    onClick={clearFilters}
-                    variant="outline"
-                    size="sm"
-                    className="w-full mt-3"
-                  >
-                    Clear All Filters
-                  </Button>
-                )}
-              </div>
-            </div>
+
           </div>
 
           {/* Main Feed */}
           <div className="lg:col-span-6 space-y-6">
-            {/* Search and Filter Bar */}
-            <div className="space-y-4">
-              <div className="relative">
-                <Input
-                  placeholder="Search prompts..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-12 pl-4 pr-4"
-                />
-              </div>
-              
-              {filterTags.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {filterTags.map((tag) => (
-                    <Badge
-                      key={tag}
-                      variant="secondary"
-                      className="px-3 py-1 cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
-                      onClick={() => toggleTagFilter(tag)}
-                    >
-                      #{tag} ×
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
+            {/* Quick Create Prompt */}
+            <QuickCreateBox 
+              onPromptCreated={loadPrompts} 
+              availableTags={availableTags}
+              filterTags={filterTags}
+              onToggleTagFilter={toggleTagFilter}
+              onClearFilters={clearFilters}
+            />
+            
 
             {/* Prompts Feed */}
             <div className="space-y-6">
               {prompts.map((prompt) => (
-                <article key={prompt.id} className="p-6 bg-card rounded-xl border border-border hover:shadow-md transition-all duration-200 animate-slide-up">
+                <article 
+                  key={prompt.id} 
+                  className="p-6 bg-card rounded-xl border border-border hover:shadow-md transition-all duration-200 animate-slide-up cursor-pointer hover:border-primary/20"
+                  onClick={(e) => {
+                    // Don't navigate if clicking on interactive elements
+                    const target = e.target as HTMLElement;
+                    if (target.closest('button') || target.closest('a') || target.closest('[role="button"]') || target.closest('.badge')) {
+                      return;
+                    }
+                    navigate(`/prompt/${prompt.id}`);
+                  }}
+                >
                   {/* Post Header */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-3">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={prompt.avatar_url} />
+                      <Avatar 
+                        className="h-12 w-12 cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/profile/${prompt.username}`);
+                        }}
+                      >
+                        <AvatarImage src={prompt.avatar_url || (user && user.id === prompt.user_id ? user.user_metadata?.avatar_url : null)} />
                         <AvatarFallback className="bg-primary/10 text-primary text-lg font-medium">
                           {prompt.username.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <h3 className="font-semibold text-foreground">@{prompt.username}</h3>
+                        <h3 
+                          className="font-semibold text-foreground hover:text-primary cursor-pointer transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/profile/${prompt.username}`);
+                          }}
+                        >
+                          @{prompt.username}
+                        </h3>
                         <p className="text-sm text-muted-foreground">
                           {new Date(prompt.created_at).toLocaleDateString()}
                         </p>
@@ -646,7 +622,7 @@ export function Home() {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="h-4 w-4" />
+                          <DotsThree className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
@@ -660,7 +636,7 @@ export function Home() {
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => handleShare(prompt)}>
-                          <Share2 className="h-4 w-4 mr-2" />
+                          <ShareNetwork className="h-4 w-4 mr-2" />
                           Share
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -670,7 +646,23 @@ export function Home() {
                   {/* Post Content */}
                   <div className="mb-4">
                     <h4 className="text-lg font-semibold text-foreground mb-2">{prompt.title}</h4>
-                    <p className="text-foreground leading-relaxed">{prompt.content}</p>
+                    <p className="text-foreground leading-relaxed">
+                      {prompt.content.length > 200 
+                        ? `${prompt.content.substring(0, 200)}...` 
+                        : prompt.content
+                      }
+                    </p>
+                    {prompt.content.length > 200 && (
+                      <button 
+                        className="text-primary text-sm font-medium mt-1 hover:underline"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/prompt/${prompt.id}`);
+                        }}
+                      >
+                        Read more
+                      </button>
+                    )}
                   </div>
 
                   {/* Tags */}
@@ -681,7 +673,10 @@ export function Home() {
                           key={tag}
                           variant="outline"
                           className="px-2 py-1 text-xs cursor-pointer hover:bg-primary hover:text-primary-foreground"
-                          onClick={() => toggleTagFilter(tag)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleTagFilter(tag);
+                          }}
                         >
                           #{tag}
                         </Badge>
@@ -693,7 +688,10 @@ export function Home() {
                   <div className="flex items-center justify-between pt-4 border-t border-border">
                     <div className="flex items-center space-x-6">
                       <button
-                        onClick={() => handleUpvote(prompt.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleUpvote(prompt.id);
+                        }}
                         className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
                           userInteractions.upvotes.has(prompt.id)
                             ? 'text-red-500 bg-red-50 dark:bg-red-950/20'
@@ -705,22 +703,28 @@ export function Home() {
                       </button>
 
                       <button
-                        onClick={() => handleBookmark(prompt.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleBookmarkSimple(prompt.id);
+                        }}
                         className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
                           userInteractions.bookmarks.has(prompt.id)
                             ? 'text-yellow-500 bg-yellow-50 dark:bg-yellow-950/20'
                             : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                         }`}
                       >
-                        <Bookmark className={`h-5 w-5 ${userInteractions.bookmarks.has(prompt.id) ? 'fill-current' : ''}`} />
+                        <BookmarkSimple className={`h-5 w-5 ${userInteractions.bookmarks.has(prompt.id) ? 'fill-current' : ''}`} />
                         <span className="text-sm font-medium">{prompt.bookmarks}</span>
                       </button>
 
                       <button
-                        onClick={() => handleShare(prompt)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleShare(prompt);
+                        }}
                         className="flex items-center space-x-2 px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                       >
-                        <Share2 className="h-5 w-5" />
+                        <ShareNetwork className="h-5 w-5" />
                         <span className="text-sm font-medium">Share</span>
                       </button>
                     </div>
@@ -732,50 +736,14 @@ export function Home() {
 
           {/* Right Sidebar */}
           <div className="lg:col-span-3 space-y-6">
-            {/* Trending Prompts */}
-            <div className="p-6 bg-primary/5 rounded-xl border border-primary/20">
-              <h3 className="font-semibold text-foreground mb-4">Trending Prompts</h3>
-              <div className="space-y-3">
-                {trendingPrompts.map((prompt) => (
-                  <div key={prompt.id} className="p-3 bg-background rounded-lg border border-border">
-                    <h4 className="font-medium text-foreground text-sm mb-2 line-clamp-2 leading-tight">{prompt.title}</h4>
-                    <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
-                      <span className="flex items-center gap-1">
-                        <Heart className="h-3 w-3 fill-current text-red-500" />
-                        {prompt.upvotes} upvotes
-                      </span>
-                    </div>
-                    {prompt.tags && prompt.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {prompt.tags.slice(0, 2).map((tag) => (
-                          <Badge 
-                            key={tag} 
-                            variant="outline" 
-                            className="text-xs px-1.5 py-0.5 h-5 text-[10px] cursor-pointer hover:bg-primary hover:text-primary-foreground"
-                            onClick={() => toggleTagFilter(tag)}
-                          >
-                            #{tag}
-                          </Badge>
-                        ))}
-                        {prompt.tags.length > 2 && (
-                          <Badge variant="outline" className="text-xs px-1.5 py-0.5 h-5 text-[10px] text-muted-foreground">
-                            +{prompt.tags.length - 2}
-                          </Badge>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
 
             {/* Global Leaderboard */}
-            <div className="p-6 bg-primary/5 rounded-xl border border-primary/20">
-              <h3 className="font-semibold text-foreground mb-4">Global Leaderboard</h3>
+            <div className="p-6 bg-primary/5 rounded-xl border border-primary/10">
+              <h3 className="font-semibold text-foreground mb-4">Leaderboard</h3>
               <div className="space-y-3">
                 {leaderboard.slice(0, 5).map((user, index) => (
-                  <div key={user.username} className="flex items-center space-x-3 p-2">
-                    <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
+                  <div key={user.username} className="flex items-center space-x-3 py-1">
+                    <div className="w-2 h-6  flex items-center justify-center text-xs font-bold text-primary">
                       {index + 1}
                     </div>
                     <Avatar className="h-8 w-8">
@@ -793,24 +761,6 @@ export function Home() {
               </div>
             </div>
 
-            {/* Community Stats */}
-            <div className="p-6 bg-primary/5 rounded-xl border border-primary/20">
-              <h3 className="font-semibold text-foreground mb-4">Community Stats</h3>
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Total Users</span>
-                  <span className="font-medium">{stats.totalUsers.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Total Upvotes</span>
-                  <span className="font-medium">{stats.totalUpvotes.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Active Today</span>
-                  <span className="font-medium">{stats.activeUsers.toLocaleString()}</span>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -832,7 +782,7 @@ export function Home() {
                 value={createForm.title}
                 onChange={(e) => setCreateForm(prev => ({ ...prev, title: e.target.value }))}
                 placeholder="Enter a descriptive title"
-                className="mt-1"
+                className="mt-1 bg-background/50"
                 maxLength={100}
               />
               <div className="text-xs text-muted-foreground text-right mt-1">
