@@ -138,25 +138,6 @@ export function Navigation({ searchQuery, onSearchChange, selectedTags, onTagsCh
               >
                 <span className="font-body">Analytics</span>
               </DropdownMenuItem>
-
-              <DropdownMenuItem
-                onClick={() => navigate('/collections')}
-                className="hover:bg-accent transition-fast cursor-pointer"
-              >
-                <span className="font-body">Collections</span>
-              </DropdownMenuItem> 
-              <DropdownMenuItem
-                onClick={() => navigate('/tester')}
-                className="hover:bg-accent transition-fast cursor-pointer"
-              >
-                <span className="font-body">Prompt Tester</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => navigate('/challenges')}
-                className="hover:bg-accent transition-fast cursor-pointer"
-              >
-                <span className="font-body">Challenges</span>
-              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => navigate('/settings')}
                 className="hover:bg-accent transition-fast cursor-pointer"

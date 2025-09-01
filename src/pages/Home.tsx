@@ -67,6 +67,8 @@ export function Home() {
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [filterTags, setFilterTags] = useState<string[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [hasMorePosts, setHasMorePosts] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);  
   const [createForm, setCreateForm] = useState({
     title: '',
     content: '',
@@ -551,7 +553,7 @@ export function Home() {
                   <span className="font-medium">{stats.totalUsers.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Upvotes</span>
+                  <span className="text-muted-foreground">Upprompts</span>
                   <span className="font-medium">{stats.totalUpvotes.toLocaleString()}</span>
                 </div>
               </div>
@@ -574,20 +576,25 @@ export function Home() {
             
 
             {/* Prompts Feed */}
-            <div className="space-y-6">
-              {prompts.map((prompt) => (
-                <article 
-                  key={prompt.id} 
-                  className="p-6 bg-card rounded-xl border border-border hover:shadow-md transition-all duration-200 animate-slide-up cursor-pointer hover:border-primary/20"
-                  onClick={(e) => {
-                    // Don't navigate if clicking on interactive elements
-                    const target = e.target as HTMLElement;
-                    if (target.closest('button') || target.closest('a') || target.closest('[role="button"]') || target.closest('.badge')) {
-                      return;
-                    }
-                    navigate(`/prompt/${prompt.id}`);
-                  }}
-                >
+            <div className={`
+  bg-card border-t border-x border-border rounded-t-xl
+  ${!hasMorePosts ? 'border-b rounded-b-xl' : ''}
+`}>
+
+  {prompts.map((prompt, index) => (
+    <article 
+      key={prompt.id} 
+      // Individual posts no longer have their own border or rounding.
+      // We add a top border to separate the posts from each other.
+      className={`p-6 cursor-pointer hover:bg-muted/50 transition-colors ${index !== 0 ? 'border-t border-border' : ''}`}
+      onClick={(e) => {
+        const target = e.target as HTMLElement;
+        if (target.closest('button') || target.closest('a') || target.closest('[role="button"]') || target.closest('.badge')) {
+          return;
+        }
+        navigate(`/prompt/${prompt.id}`);
+      }}
+    >
                   {/* Post Header */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-3">
@@ -727,10 +734,17 @@ export function Home() {
                         <ShareNetwork className="h-5 w-5" />
                         <span className="text-sm font-medium">Share</span>
                       </button>
+                      
                     </div>
                   </div>
                 </article>
               ))}
+              {/* This spinner will only show up when isLoading is true */}
+  {isLoading && (
+    <div className="flex items-center justify-center p-6 border-t border-border">
+      <div className="w-6 h-6 border-4 border-muted border-t-primary rounded-full animate-spin"></div>
+    </div>
+  )}
             </div>
           </div>
 
@@ -754,7 +768,7 @@ export function Home() {
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-foreground text-sm truncate">@{user.username}</p>
-                      <p className="text-xs text-muted-foreground">{user.total_upvotes} upvotes</p>
+                      <p className="text-xs text-muted-foreground">{user.total_upvotes} upprompts</p>
                     </div>
                   </div>
                 ))}
