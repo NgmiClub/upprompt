@@ -536,10 +536,10 @@ export function Home() {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <div className="max-w-7xl mx-auto px-4 py-4">
+      <div className="max-w-7xl mx-auto px-4 py-2 sm:py-4">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left Sidebar */}
-          <div className="lg:col-span-3 space-y-6">
+          {/* Left Sidebar - Hidden on mobile */}
+          <div className="hidden lg:block lg:col-span-3 space-y-6">
             {/* Community Stats */}
             <div className="p-6 bg-primary/5 rounded-xl border border-primary/10">
               <h3 className="font-semibold text-foreground mb-4">Stats</h3>
@@ -564,7 +564,7 @@ export function Home() {
           </div>
 
           {/* Main Feed */}
-          <div className="lg:col-span-6 space-y-6">
+          <div className="lg:col-span-6 space-y-4 sm:space-y-6">
             {/* Quick Create Prompt */}
             <QuickCreateBox 
               onPromptCreated={loadPrompts} 
@@ -586,7 +586,7 @@ export function Home() {
       key={prompt.id} 
       // Individual posts no longer have their own border or rounding.
       // We add a top border to separate the posts from each other.
-      className={`p-6 cursor-pointer hover:bg-muted/50 transition-colors ${index !== 0 ? 'border-t border-border' : ''}`}
+      className={`p-4 sm:p-6 cursor-pointer hover:bg-muted/50 transition-colors ${index !== 0 ? 'border-t border-border' : ''}`}
       onClick={(e) => {
         const target = e.target as HTMLElement;
         if (target.closest('button') || target.closest('a') || target.closest('[role="button"]') || target.closest('.badge')) {
@@ -596,23 +596,23 @@ export function Home() {
       }}
     >
                   {/* Post Header */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3">
+                  <div className="flex items-center justify-between mb-3 sm:mb-4">
+                    <div className="flex items-center space-x-2 sm:space-x-3">
                       <Avatar 
-                        className="h-12 w-12 cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all"
+                        className="h-8 w-8 sm:h-12 sm:w-12 cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all"
                         onClick={(e) => {
                           e.stopPropagation();
                           navigate(`/profile/${prompt.username}`);
                         }}
                       >
                         <AvatarImage src={prompt.avatar_url || (user && user.id === prompt.user_id ? user.user_metadata?.avatar_url : null)} />
-                        <AvatarFallback className="bg-primary/10 text-primary text-lg font-medium">
+                        <AvatarFallback className="bg-primary/10 text-primary text-sm sm:text-lg font-medium">
                           {prompt.username.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <h3 
-                          className="font-semibold text-foreground hover:text-primary cursor-pointer transition-colors"
+                          className="font-medium sm:font-semibold text-sm sm:text-base text-foreground hover:text-primary cursor-pointer transition-colors"
                           onClick={(e) => {
                             e.stopPropagation();
                             navigate(`/profile/${prompt.username}`);
@@ -620,7 +620,7 @@ export function Home() {
                         >
                           @{prompt.username}
                         </h3>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-xs sm:text-sm text-muted-foreground">
                           {new Date(prompt.created_at).toLocaleDateString()}
                         </p>
                       </div>
@@ -651,9 +651,9 @@ export function Home() {
                   </div>
 
                   {/* Post Content */}
-                  <div className="mb-4">
-                    <h4 className="text-lg font-semibold text-foreground mb-2">{prompt.title}</h4>
-                    <p className="text-foreground leading-relaxed">
+                  <div className="mb-3 sm:mb-4">
+                    <h4 className="text-base sm:text-lg font-medium sm:font-semibold text-foreground mb-1 sm:mb-2">{prompt.title}</h4>
+                    <p className="text-sm sm:text-base text-foreground leading-relaxed">
                       {prompt.content.length > 200 
                         ? `${prompt.content.substring(0, 200)}...` 
                         : prompt.content
@@ -674,12 +674,12 @@ export function Home() {
 
                   {/* Tags */}
                   {prompt.tags && prompt.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-4">
+                    <div className="flex flex-wrap gap-1 sm:gap-2 mb-3 sm:mb-4">
                       {prompt.tags.map((tag) => (
                         <Badge
                           key={tag}
                           variant="outline"
-                          className="px-2 py-1 text-xs cursor-pointer hover:bg-primary hover:text-primary-foreground"
+                          className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs cursor-pointer hover:bg-primary hover:text-primary-foreground"
                           onClick={(e) => {
                             e.stopPropagation();
                             toggleTagFilter(tag);
@@ -692,21 +692,21 @@ export function Home() {
                   )}
 
                   {/* Post Actions */}
-                  <div className="flex items-center justify-between pt-4 border-t border-border">
-                    <div className="flex items-center space-x-6">
+                  <div className="flex items-center justify-between pt-3 sm:pt-4 border-t border-border">
+                    <div className="flex items-center space-x-3 sm:space-x-6">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleUpvote(prompt.id);
                         }}
-                        className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
+                        className={`flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg transition-colors ${
                           userInteractions.upvotes.has(prompt.id)
                             ? 'text-red-500 bg-red-50 dark:bg-red-950/20'
                             : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                         }`}
                       >
-                        <Heart className={`h-5 w-5 ${userInteractions.upvotes.has(prompt.id) ? 'fill-current' : ''}`} />
-                        <span className="text-sm font-medium">{prompt.upvotes}</span>
+                        <Heart className={`h-4 sm:h-5 w-4 sm:w-5 ${userInteractions.upvotes.has(prompt.id) ? 'fill-current' : ''}`} />
+                        <span className="text-xs sm:text-sm font-medium">{prompt.upvotes}</span>
                       </button>
 
                       <button
@@ -714,14 +714,14 @@ export function Home() {
                           e.stopPropagation();
                           handleBookmarkSimple(prompt.id);
                         }}
-                        className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
+                        className={`flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg transition-colors ${
                           userInteractions.bookmarks.has(prompt.id)
                             ? 'text-yellow-500 bg-yellow-50 dark:bg-yellow-950/20'
                             : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                         }`}
                       >
-                        <BookmarkSimple className={`h-5 w-5 ${userInteractions.bookmarks.has(prompt.id) ? 'fill-current' : ''}`} />
-                        <span className="text-sm font-medium">{prompt.bookmarks}</span>
+                        <BookmarkSimple className={`h-4 sm:h-5 w-4 sm:w-5 ${userInteractions.bookmarks.has(prompt.id) ? 'fill-current' : ''}`} />
+                        <span className="text-xs sm:text-sm font-medium">{prompt.bookmarks}</span>
                       </button>
 
                       <button
@@ -729,10 +729,10 @@ export function Home() {
                           e.stopPropagation();
                           handleShare(prompt);
                         }}
-                        className="flex items-center space-x-2 px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                        className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                       >
-                        <ShareNetwork className="h-5 w-5" />
-                        <span className="text-sm font-medium">Share</span>
+                        <ShareNetwork className="h-4 sm:h-5 w-4 sm:w-5" />
+                        <span className="text-xs sm:text-sm font-medium">Share</span>
                       </button>
                       
                     </div>
@@ -748,8 +748,8 @@ export function Home() {
             </div>
           </div>
 
-          {/* Right Sidebar */}
-          <div className="lg:col-span-3 space-y-6">
+          {/* Right Sidebar - Hidden on mobile */}
+          <div className="hidden lg:block lg:col-span-3 space-y-6">
 
             {/* Global Leaderboard */}
             <div className="p-6 bg-primary/5 rounded-xl border border-primary/10">
@@ -778,6 +778,7 @@ export function Home() {
           </div>
         </div>
       </div>
+
 
       {/* Create Prompt Modal */}
       <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>

@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { MobileSidebar } from '@/components/shared/MobileSidebar';
 import { useAuth } from '@/hooks/useAuth';
 import {
   ArrowLeft,
@@ -23,13 +24,26 @@ import {
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+interface PromptStats {
+  upvotes: number;
+  bookmarks: number;
+  created_at: string;
+  content: string;
+  tags?: string[];
+  isUpvoted?: boolean;
+  isSaved?: boolean;
+}
+
 interface NavigationProps {
   showBackButton?: boolean;
   onBack?: () => void;
+  promptStats?: PromptStats;
+  onCopyPrompt?: () => void;
 }
 
-export function Navigation({ showBackButton = false, onBack }: NavigationProps) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+export function Navigation({ showBackButton = false, onBack, promptStats, onCopyPrompt }: NavigationProps) {
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isSidebarClosing, setIsSidebarClosing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
@@ -95,10 +109,16 @@ export function Navigation({ showBackButton = false, onBack }: NavigationProps) 
     }
   };
 
-  const isHomePage = location.pathname === '/home';
-  const isAnalyticsPage = location.pathname === '/analytics';
-  const isProfilePage = location.pathname.startsWith('/profile');
-  const isSettingsPage = location.pathname === '/settings';
+  const closeMobileSidebar = () => {
+    if (isMobileSidebarOpen && !isSidebarClosing) {
+      setIsSidebarClosing(true);
+      setTimeout(() => {
+        setIsMobileSidebarOpen(false);
+        setIsSidebarClosing(false);
+      }, 250); // Match the slide-out animation duration
+    }
+  };
+
 
   return (
     <nav className="sticky top-0 z-50 w-full py-3 pt-4">
@@ -194,10 +214,16 @@ export function Navigation({ showBackButton = false, onBack }: NavigationProps) 
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                  onClick={() => {
+                    if (isMobileSidebarOpen) {
+                      closeMobileSidebar();
+                    } else {
+                      setIsMobileSidebarOpen(true);
+                    }
+                  }}
                   className="h-9 w-9 p-0"
                 >
-                  {isSidebarOpen ? <X className="h-5 w-5" /> : <List className="h-5 w-5" />}
+                  {isMobileSidebarOpen ? <X className="h-5 w-5" /> : <List className="h-5 w-5" />}
                 </Button>
               </div>
             </div>
@@ -205,95 +231,15 @@ export function Navigation({ showBackButton = false, onBack }: NavigationProps) 
         </div>
       </div>
 
-      {/* Mobile Navigation */}
-      {isSidebarOpen && (
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-2 md:hidden">
-          <div className="bg-background/95 backdrop-blur-lg border border-border/50 rounded-xl shadow-lg">
-            <div className="px-4 pt-4 pb-3 space-y-1">
-              {/* Search Bar for Mobile */}
-              <form onSubmit={handleSearch} className="px-2 pb-2">
-                <div className="relative">
-                  <MagnifyingGlass className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search prompts..."
-                    value={searchQuery}
-                    onChange={handleSearchChange}
-                    onKeyDown={handleKeyDown}
-                    className="pl-10 pr-10 bg-background/50 border-border/50 rounded-lg"
-                  />
-                  {searchQuery && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleClearSearch}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-muted/50"
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  )}
-                </div>
-              </form>
-
-              {/* Navigation Links */}
-              <Button
-                variant="ghost"
-                className={`w-full justify-start ${isHomePage ? 'text-foreground bg-muted/50' : 'text-muted-foreground'}`}
-                onClick={() => {
-                  navigate('/home');
-                  setIsSidebarOpen(false);
-                }}
-              >
-                Home
-              </Button>
-
-              <Button
-                variant="ghost"
-                className={`w-full justify-start ${isAnalyticsPage ? 'text-foreground bg-muted/50' : 'text-muted-foreground'}`}
-                onClick={() => {
-                  navigate('/analytics');
-                  setIsSidebarOpen(false);
-                }}
-              >
-                Analytics
-              </Button>
-
-              <Button
-                variant="ghost"
-                className={`w-full justify-start ${isProfilePage ? 'text-foreground bg-muted/50' : 'text-muted-foreground'}`}
-                onClick={() => {
-                  navigate(`/profile/${user?.user_metadata?.username || user?.id}`);
-                  setIsSidebarOpen(false);
-                }}
-              >
-                Profile
-              </Button>
-
-              <Button
-                variant="ghost"
-                className={`w-full justify-start ${isSettingsPage ? 'text-foreground bg-muted/50' : 'text-muted-foreground'}`}
-                onClick={() => {
-                  navigate('/settings');
-                  setIsSidebarOpen(false);
-                }}
-              >
-                Settings
-              </Button>
-
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-muted-foreground"
-                onClick={() => {
-                  handleSignOut();
-                  setIsSidebarOpen(false);
-                }}
-              >
-                Sign Out
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      
+      {/* Mobile Sidebar */}
+      <MobileSidebar 
+        isOpen={isMobileSidebarOpen}
+        isClosing={isSidebarClosing}
+        onClose={closeMobileSidebar}
+        promptStats={promptStats}
+        onCopyPrompt={onCopyPrompt}
+      />
     </nav>
   );
 }
