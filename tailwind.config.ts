@@ -19,9 +19,9 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				sans: ['Outfit', 'system-ui', 'sans-serif'],
-				display: ['Outfit', 'system-ui', 'sans-serif'],
-				mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+				sans: ['Jost', 'system-ui', 'sans-serif'],
+				display: ['Jost', 'system-ui', 'sans-serif'],
+				mono: ['Jost', 'Fira Code', 'monospace'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
