@@ -1,73 +1,164 @@
-# Welcome to your NGMI project
+# Upprompt - AI Prompt Sharing Platform
 
-## Project info
+A sophisticated platform for sharing, discovering, and collaborating on high-quality AI prompts. Built with React, TypeScript, and Supabase for modern web performance and real-time features.
 
-**URL**: https://lovable.dev/projects/ddeeb299-09da-4010-9897-98b3bd50b43c
+## Features
 
-## How can I edit this code?
+### Core Functionality
+- **AI Prompt Creation & Management** - Build and organize your AI prompts with tags and collections
+- **Real-time Analytics Dashboard** - Track performance with live metrics and user insights
+- **Prompt Collections** - Curate and share themed prompt collections with the community
+- **AI Prompt Tester** - Test prompts across multiple AI models with cost estimation
+- **Community Challenges** - Participate in themed prompt competitions with voting systems
+- **Dynamic OpenGraph Images** - Automatically generated social media previews for each prompt
 
-There are several ways of editing your application.
+### User Experience
+- **Professional Design** - Clean, modern interface with yellow-orange theme
+- **Responsive Design** - Optimized for mobile, tablet, and desktop devices
+- **Dark/Light Mode** - Complete theme support with proper contrast ratios
+- **Smooth Animations** - Subtle transitions and hover effects throughout
+- **Search & Filtering** - Advanced search with tag-based filtering system
 
-**Use Lovable**
+### Social Features
+- **User Profiles** - Customizable profiles with avatar upload and statistics
+- **Community Interaction** - Upvote, bookmark, and share prompts
+- **Leaderboards** - Community rankings based on prompt popularity
+- **Real-time Updates** - Live data synchronization without page refreshes
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ddeeb299-09da-4010-9897-98b3bd50b43c) and start prompting.
+## Tech Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Frontend**: React 18 + TypeScript + Vite
+- **UI Components**: Shadcn UI built on Radix UI primitives
+- **Styling**: Tailwind CSS with custom design system
+- **Charts**: Recharts for data visualization
+- **Backend**: Supabase (PostgreSQL + Real-time + Auth + Storage)
+- **State Management**: React Query for server state
+- **Icons**: Phosphor Icons
+- **Fonts**: Outfit, Montserrat, JetBrains Mono
 
-**Use your preferred IDE**
+## Design System
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Color Palette
+- **Primary**: Warm amber (#f59e0b)
+- **Secondary**: Complementary orange and yellow tones
+- **Theme**: Full dark/light mode support with CSS custom properties
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Typography
+- **Display**: Montserrat for headings and branding
+- **Body**: Outfit for readable body text
+- **Code**: JetBrains Mono for technical content
 
-Follow these steps:
+### Components
+- Consistent component library with shadcn/ui
+- Custom theme integration with Tailwind CSS
+- Responsive breakpoints and spacing system
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## Getting Started
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd upprompt
+   ```
 
-# Step 3: Install the necessary dependencies.
-npm i
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+3. **Environment Setup**
+   Create `.env.local` with your Supabase credentials:
+   ```
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
 
-**Edit a file directly in GitHub**
+4. **Development Server**
+   ```bash
+   npm run dev
+   ```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+5. **Build for Production**
+   ```bash
+   npm run build
+   ```
 
-**Use GitHub Codespaces**
+## Database Setup
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Supabase Configuration
+1. Create a new Supabase project
+2. Set up authentication with OAuth providers (Google, GitHub)
+3. Configure Row Level Security (RLS) policies
+4. Set up real-time subscriptions for live updates
 
-## What technologies are used for this project?
+### Required Tables
+- `prompts` - Store AI prompts with metadata
+- `profiles` - User profile information
+- `up_prompts` - Upvote tracking
+- `bookmarks` - Saved prompts
+- `collections` - Prompt collections
+- `challenges` - Community challenges
 
-This project is built with:
+## Features in Detail
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Analytics Dashboard
+- **User-specific Analytics** - Personal performance metrics and trends
+- **Weekly Growth Tracking** - Visual charts showing engagement over time
+- **Top Performing Content** - Identify your most successful prompts
+- **Community Insights** - See how you rank against other users
 
-## How can I deploy this project?
+### Prompt Management
+- **Rich Text Editor** - Create detailed prompts with formatting
+- **Tag System** - Organize prompts with custom and suggested tags
+- **Preview Mode** - See exactly how prompts appear to others
+- **Quick Actions** - Copy, download, and share prompts easily
 
-Simply open [Lovable](https://lovable.dev/projects/ddeeb299-09da-4010-9897-98b3bd50b43c) and click on Share -> Publish.
+### Social Integration
+- **OpenGraph Support** - Dynamic social media previews
+- **Direct AI Platform Integration** - One-click prompt testing
+- **Community Features** - Follow users, bookmark favorites
+- **Sharing Tools** - Built-in sharing across social platforms
 
-## Can I connect a custom domain to my Lovable project?
+## Development Guidelines
 
-Yes, you can!
+### Code Organization
+- Feature-based component structure
+- Shared utilities in `/lib` directory
+- Custom hooks in `/hooks` directory
+- Type definitions with TypeScript interfaces
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Performance
+- React Query for efficient data fetching and caching
+- Lazy loading for route components
+- Optimized images and assets
+- Real-time subscriptions with automatic cleanup
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### Security
+- Row Level Security (RLS) on all database operations
+- Secure authentication with Supabase Auth
+- Input validation and sanitization
+- No sensitive data in client-side code
+
+## Contributing
+
+We welcome contributions to Upprompt. Please ensure:
+- Follow the existing code style and conventions
+- Add TypeScript types for all new features
+- Test your changes across different screen sizes
+- Update documentation for new features
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Deployment
+
+The application is optimized for deployment on modern hosting platforms:
+- **Vite Build**: Optimized production builds
+- **Static Assets**: Proper caching and CDN support
+- **Environment Variables**: Secure configuration management
+- **Database Migrations**: Version-controlled schema changes
+
+---
+
+**Upprompt** - A sophisticated platform for AI prompt engineering and community collaboration.

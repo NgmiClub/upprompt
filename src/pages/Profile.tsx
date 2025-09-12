@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Navigation } from '@/components/layout/Navigation';
+import { Navigation } from '@/components/shared/Navigation';
 import { PromptCard } from '@/components/prompts/PromptCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,16 +11,16 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  Github, 
-  Twitter, 
-  Linkedin, 
-  Instagram, 
-  MessageSquare as Discord,
-  Edit2,
-  Loader2,
-  Bookmark,
-  ArrowUp
-} from 'lucide-react';
+  GithubLogo, 
+  TwitterLogo, 
+  LinkedinLogo, 
+  InstagramLogo, 
+  DiscordLogo,
+  PencilSimple,
+  Spinner,
+  BookmarkSimple,
+  CaretUp
+} from '@phosphor-icons/react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -70,6 +70,7 @@ export function Profile() {
   });
   const [currentUserUpvotes, setCurrentUserUpvotes] = useState<Set<string>>(new Set());
   const [currentUserBookmarks, setCurrentUserBookmarks] = useState<Set<string>>(new Set());
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   
   const { user, loading } = useAuth();
   const { username } = useParams();
@@ -325,13 +326,91 @@ export function Profile() {
     }
   };
 
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files || !event.target.files[0] || !user || !profile) {
+      return;
+    }
+
+    const file = event.target.files[0];
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        description: 'Please select a valid image file',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        description: 'File size must be less than 5MB',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+
+      // Upload to Supabase storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(uploadData.path);
+
+      // Update profile with new avatar URL
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({
+          avatar_url: publicUrl,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', profile.id);
+
+      if (updateError) throw updateError;
+
+      // Update local state
+      setProfile(prev => prev ? { ...prev, avatar_url: publicUrl } : null);
+
+      toast({
+        description: 'Profile picture updated successfully',
+      });
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      toast({
+        description: 'Failed to upload profile picture',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsUploadingAvatar(false);
+      // Reset file input
+      if (event.target) {
+        event.target.value = '';
+      }
+    }
+  };
+
   const getSocialIcon = (platform: string) => {
     switch (platform) {
-      case 'github': return <Github className="h-4 w-4" />;
-      case 'twitter': return <Twitter className="h-4 w-4" />;
-      case 'linkedin': return <Linkedin className="h-4 w-4" />;
-      case 'instagram': return <Instagram className="h-4 w-4" />;
-      case 'discord': return <Discord className="h-4 w-4" />;
+      case 'github': return <GithubLogo className="h-4 w-4" />;
+      case 'twitter': return <TwitterLogo className="h-4 w-4" />;
+      case 'linkedin': return <LinkedinLogo className="h-4 w-4" />;
+      case 'instagram': return <InstagramLogo className="h-4 w-4" />;
+      case 'discord': return <DiscordLogo className="h-4 w-4" />;
       default: return null;
     }
   };
@@ -349,7 +428,7 @@ export function Profile() {
   if (loading || isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Spinner className="h-8 w-8 animate-spin" />
       </div>
     );
   }
@@ -361,13 +440,7 @@ export function Profile() {
   if (!profile) {
     return (
       <div className="min-h-screen bg-background">
-        <Navigation 
-          searchQuery=""
-          onSearchChange={() => {}}
-          selectedTags={[]}
-          onTagsChange={() => {}}
-          onPromptCreated={() => loadProfile()}
-        />
+        <Navigation />
         <div className="container mx-auto px-4 py-8 max-w-2xl">
           <div className="text-center py-12">
             <p className="text-muted-foreground">Profile not found</p>
@@ -379,26 +452,44 @@ export function Profile() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation 
-        searchQuery=""
-        onSearchChange={() => {}}
-        selectedTags={[]}
-        onTagsChange={() => {}}
-        onPromptCreated={() => loadProfile()}
-      />
+      <Navigation />
       
-      <main className="container mx-auto px-4 py-4 sm:py-6 lg:py-8 max-w-4xl">
+      <main className="container mx-auto px-4 py-4 sm:py-6 lg:py-8 max-w-7xl">
         {/* Profile Header */}
         <Card className="mb-6 sm:mb-8">
           <CardHeader className="p-4 sm:p-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
               <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
-                <Avatar className="h-16 w-16 sm:h-20 sm:w-20">
-                  <AvatarImage src={profile.avatar_url || user?.user_metadata?.avatar_url} alt={profile.username} />
-                  <AvatarFallback className="bg-primary text-primary-foreground font-heading text-lg sm:text-xl">
-                    {profile.username[0].toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                  <Avatar className="h-16 w-16 sm:h-20 sm:w-20">
+                    <AvatarImage 
+                      src={profile.avatar_url || (isOwnProfile ? user?.user_metadata?.avatar_url : null)} 
+                      alt={profile.username} 
+                    />
+                    <AvatarFallback className="bg-primary text-primary-foreground font-heading text-lg sm:text-xl">
+                      {profile.username[0].toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  {isOwnProfile && isEditing && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 hover:opacity-100 transition-opacity cursor-pointer">
+                      <label htmlFor="avatar-upload" className="cursor-pointer text-white text-xs font-medium">
+                        {isUploadingAvatar ? (
+                          <Spinner className="h-4 w-4 animate-spin" />
+                        ) : (
+                          'Change'
+                        )}
+                      </label>
+                      <input
+                        id="avatar-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarUpload}
+                        className="hidden"
+                        disabled={isUploadingAvatar}
+                      />
+                    </div>
+                  )}
+                </div>
                 <div className="space-y-1 w-full sm:w-auto">
                   {isEditing ? (
                     <Input
@@ -412,7 +503,7 @@ export function Profile() {
                   )}
                   <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 text-xs sm:text-sm text-muted-foreground">
                     <span className="flex items-center">
-                      <ArrowUp className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                      <CaretUp className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                       {userPrompts.reduce((sum, p) => sum + p.upvotes, 0)} upvotes
                     </span>
                     <span>{userPrompts.length} prompts</span>
@@ -433,7 +524,7 @@ export function Profile() {
                   }}
                   className="w-full sm:w-auto"
                 >
-                  <Edit2 className="h-4 w-4 mr-2" />
+                  <PencilSimple className="h-4 w-4 mr-2" />
                   {isEditing ? 'Save' : 'Edit Profile'}
                 </Button>
               )}
@@ -523,7 +614,7 @@ export function Profile() {
             </TabsTrigger>
             {isOwnProfile && (
               <TabsTrigger value="bookmarks" className="flex items-center justify-center space-x-1 sm:space-x-2 text-xs sm:text-sm">
-                <Bookmark className="h-3 w-3 sm:h-4 sm:w-4" />
+                <BookmarkSimple className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">Bookmarks</span>
                 <span className="sm:hidden">Saved</span>
                 <span>({bookmarkedPrompts.length})</span>

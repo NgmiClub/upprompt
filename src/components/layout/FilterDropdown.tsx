@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Filter, Check } from 'lucide-react';
+// Using text alternatives instead of icons
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -89,7 +89,6 @@ export function FilterDropdown({ selectedTags, onTagsChange }: FilterDropdownPro
           size="sm"
           className="h-10 px-3 hover:bg-accent transition-fast border-border"
         >
-          <Filter className="h-4 w-4 mr-2" />
           Filter
           {selectedTags.length > 0 && (
             <Badge variant="secondary" className="ml-2 h-5 px-2 text-xs">
@@ -127,7 +126,6 @@ export function FilterDropdown({ selectedTags, onTagsChange }: FilterDropdownPro
                 >
                   <span className="font-body text-sm text-foreground">{option.label}</span>
                   {sortBy === option.value && (
-                    <Check className="h-4 w-4 text-primary" />
                   )}
                 </button>
               ))}

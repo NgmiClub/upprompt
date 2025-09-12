@@ -1,16 +1,18 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
+import { XLogoIcon } from '@phosphor-icons/react/dist/ssr';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const [twitterLoading, setTwitterLoading] = useState(false);
+  const { signIn, signUp, signInWithTwitter } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -62,11 +64,26 @@ export default function Auth() {
     setLoading(false);
   };
 
+  const handleTwitterLogin = async () => {
+    setTwitterLoading(true);
+
+    const { error } = await signInWithTwitter();
+
+    if (error) {
+      toast({
+        description: error.message,
+        variant: 'destructive',
+      });
+      setTwitterLoading(false);
+    }
+    // Note: On success, user will be redirected by OAuth flow
+  };
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="font-heading text-2xl">Welcome to upprompt</CardTitle>
+          <CardTitle className="font-heading text-2xl">Welcome to Upprompt</CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="signin" className="w-full">
@@ -101,6 +118,27 @@ export default function Auth() {
                   {loading ? 'Signing in...' : 'Sign In'}
                 </Button>
               </form>
+              
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="px-2 text-muted-foreground">
+                    Or continue with
+                  </span>
+                </div>
+              </div>
+              
+              <Button 
+                onClick={handleTwitterLogin} 
+                variant="outline" 
+                className="w-full text-md"
+                disabled={twitterLoading || loading}
+              >
+                {twitterLoading ? 'Connecting...' : 'Continue with'}
+                <XLogoIcon className="mr-2 h-4 w-4" />
+              </Button>
             </TabsContent>
             
             <TabsContent value="signup">
@@ -146,6 +184,27 @@ export default function Auth() {
                   {loading ? 'Creating account...' : 'Sign Up'}
                 </Button>
               </form>
+              
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className=" px-2 text-muted-foreground">
+                    Or continue with
+                  </span>
+                </div>
+              </div>
+              
+              <Button 
+                onClick={handleTwitterLogin} 
+                variant="outline" 
+                className="w-full text-md"
+                disabled={twitterLoading || loading}
+              >
+                {twitterLoading ? 'Connecting...' : 'Continue with'}
+                <XLogoIcon className="mr-2 h-4 w-4" />
+              </Button>
             </TabsContent>
           </Tabs>
         </CardContent>

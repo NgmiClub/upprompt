@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowUp, Bookmark, Copy, Download, MoreHorizontal } from 'lucide-react';
+// Minimal icon usage - using text alternatives
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -85,8 +85,20 @@ export function PromptCard({
   const truncatedContent = content.length > 200 ? content.substring(0, 200) + '...' : content;
   const shouldShowMore = content.length > 200;
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Don't navigate if clicking on interactive elements
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('a') || target.closest('[role="button"]')) {
+      return;
+    }
+    navigate(`/prompt/${id}`);
+  };
+
   return (
-    <Card className="w-full transition-smooth hover:shadow-lg border-border bg-card">
+    <Card 
+      className="w-full transition-smooth hover:shadow-lg border-border bg-card cursor-pointer hover:border-primary/20"
+      onClick={handleCardClick}
+    >
       <CardHeader className="pb-3 p-4 sm:p-6">
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-2 sm:space-x-3">
@@ -98,7 +110,10 @@ export function PromptCard({
             </Avatar>
             <div>
               <p 
-                onClick={() => navigate(`/profile/${author.username}`)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/profile/${author.username}`);
+                }}
                 className="font-subheading text-xs sm:text-sm text-foreground hover:text-primary cursor-pointer transition-fast"
               >
                 @{author.username}
@@ -110,7 +125,7 @@ export function PromptCard({
           </div>
         </div>
         
-        <h3 className="font-heading text-base sm:text-lg text-foreground mt-2 sm:mt-3 leading-tight">
+        <h3 className="font-heading text-base sm:text-lg text-foreground mt-2 sm:mt-3 leading-tight hover:text-primary transition-fast">
           {title}
         </h3>
       </CardHeader>
@@ -123,7 +138,10 @@ export function PromptCard({
           </p>
           {shouldShowMore && (
             <button
-              onClick={() => setShowFullContent(!showFullContent)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowFullContent(!showFullContent);
+              }}
               className="font-body text-sm text-primary hover:text-primary/80 transition-fast"
             >
               {showFullContent ? 'Show Less' : 'Show More'}
@@ -153,12 +171,14 @@ export function PromptCard({
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleUpvote}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleUpvote();
+              }}
               className={`h-8 px-2 sm:px-3 transition-fast hover:bg-accent ${
                 isUpvoted ? 'text-primary hover:text-primary' : 'text-muted-foreground'
               }`}
             >
-              <ArrowUp className={`h-3 w-3 sm:h-4 sm:w-4 mr-1 ${isUpvoted ? 'fill-current' : ''}`} />
               <span className="font-body text-xs hidden sm:inline">{upvotes}</span>
               <span className="font-body text-xs sm:hidden">{upvotes > 999 ? `${Math.floor(upvotes/1000)}k` : upvotes}</span>
             </Button>
@@ -167,12 +187,14 @@ export function PromptCard({
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleSave}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSave();
+              }}
               className={`h-8 px-2 sm:px-3 transition-fast hover:bg-accent ${
                 isSaved ? 'text-primary hover:text-primary' : 'text-muted-foreground'
               }`}
             >
-              <Bookmark className={`h-3 w-3 sm:h-4 sm:w-4 mr-1 ${isSaved ? 'fill-current' : ''}`} />
               <span className="font-body text-xs hidden sm:inline">{bookmarks}</span>
               <span className="font-body text-xs sm:hidden">{bookmarks > 999 ? `${Math.floor(bookmarks/1000)}k` : bookmarks}</span>
             </Button>
@@ -183,20 +205,26 @@ export function PromptCard({
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleCopy}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCopy();
+              }}
               className="h-8 px-2 sm:px-3 text-muted-foreground hover:text-foreground hover:bg-accent transition-fast"
             >
-              <Copy className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="text-xs font-medium">Copy</span>
             </Button>
 
             {/* Download */}
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleDownload}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDownload();
+              }}
               className="h-8 px-2 sm:px-3 text-muted-foreground hover:text-foreground hover:bg-accent transition-fast"
             >
-              <Download className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="text-xs font-medium">Save</span>
             </Button>
           </div>
         </div>
