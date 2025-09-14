@@ -154,8 +154,8 @@ export function useAuth() {
 
   const signInWithTwitter = async () => {
     // Use the standard Supabase callback URL format
-    const redirectUrl = `${window.location.origin}/auth/v1/callback`;
-    
+    const redirectUrl = `${import.meta.env.VITE_SUPABASE_URL}/auth/v1/callback`;
+
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'twitter',
       options: {
